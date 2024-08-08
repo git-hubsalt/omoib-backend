@@ -28,8 +28,8 @@ public class HistoryService {
      */
     @Transactional
     public Long createHistory(RecommendationResultDTO resultDTO) {
-        Long userId = resultDTO.getUserId();
-        List<Clothes> clothesList = resultDTO.getClothesList();
+        Long userId = resultDTO.userId();
+        List<Clothes> clothesList = resultDTO.clothesList();
         // 사용자가 존재하는지 확인
         User user = findUser(userId);
 
