@@ -1,0 +1,78 @@
+package com.githubsalt.omoib.service;
+
+import com.githubsalt.omoib.domain.Clothes;
+import com.githubsalt.omoib.domain.History;
+import com.githubsalt.omoib.domain.User;
+import com.githubsalt.omoib.repository.HistoryRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class HistoryService {
+
+    private final UserService userService;
+    private final HistoryRepository historyRepository;
+
+    /**
+     * 사용자의 추천 기록을 생성합니다.
+     * @param userId
+     * @param clothesList
+     * @return
+     */
+    @Transactional
+    public Long createHistory(Long userId, List<Clothes> clothesList) {
+        // 사용자가 존재하는지 확인
+        User user = findUser(userId);
+
+        // History 생성
+        History history = History.builder()
+                .date(LocalDateTime.now())
+                .user(user)
+                .clothesList(clothesList)
+                .build();
+        historyRepository.save(history);
+
+        return history.getId();
+    }
+
+    /**
+     * 사용자의 전체 추천 기록을 조회합니다.
+     * @param userId
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<History> findHistories(Long userId) {
+        return historyRepository.findByUser(findUser(userId));
+    }
+
+    /**
+     * 특정 추천 기록을 조회합니다.
+     * @param historyId
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public History findHistory(Long historyId) {
+        return historyRepository.findById(historyId).orElseThrow(() -> new IllegalArgumentException("추천 기록을 찾을 수 없습니다."));
+    }
+
+    /**
+     * 특정 추천 기록을 삭제합니다.
+     * @param historyId
+     */
+    @Transactional
+    public void deleteHistory(Long historyId) {
+        historyRepository.deleteById(historyId);
+    }
+
+
+    private User findUser(Long userId) {
+        return userService.findUser(userId).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+    }
+}
