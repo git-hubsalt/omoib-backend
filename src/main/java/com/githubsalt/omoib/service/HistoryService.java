@@ -3,6 +3,7 @@ package com.githubsalt.omoib.service;
 import com.githubsalt.omoib.domain.Clothes;
 import com.githubsalt.omoib.domain.History;
 import com.githubsalt.omoib.domain.User;
+import com.githubsalt.omoib.dto.RecommendationResultDTO;
 import com.githubsalt.omoib.repository.HistoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,12 +23,13 @@ public class HistoryService {
 
     /**
      * 사용자의 추천 기록을 생성합니다.
-     * @param userId
-     * @param clothesList
+     * @param resultDTO
      * @return
      */
     @Transactional
-    public Long createHistory(Long userId, List<Clothes> clothesList) {
+    public Long createHistory(RecommendationResultDTO resultDTO) {
+        Long userId = resultDTO.getUserId();
+        List<Clothes> clothesList = resultDTO.getClothesList();
         // 사용자가 존재하는지 확인
         User user = findUser(userId);
 
