@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface HistoryRepository extends JpaRepository<History, Long> {
-    List<History> findByUser(User user);
+    List<History> findByUserAndType(User user, HistoryType type);
 }

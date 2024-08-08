@@ -34,6 +34,7 @@ public class HistoryService {
 
         // History 생성
         History history = History.builder()
+                .type(HistoryType.RECOMMENDATION)
                 .date(LocalDateTime.now())
                 .user(user)
                 .clothesList(clothesList)
@@ -44,13 +45,14 @@ public class HistoryService {
     }
 
     /**
-     * 사용자의 전체 추천 기록을 조회합니다.
+     * 사용자의 추천 기록을 조회합니다.
      * @param userId
+     * @param historyType
      * @return
      */
     @Transactional(readOnly = true)
-    public List<History> findHistories(Long userId) {
-        return historyRepository.findByUser(findUser(userId));
+    public List<History> findHistories(Long userId, HistoryType historyType) {
+        return historyRepository.findByUserAndType(findUser(userId), historyType);
     }
 
     /**

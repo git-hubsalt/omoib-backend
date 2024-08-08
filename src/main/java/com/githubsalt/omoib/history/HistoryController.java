@@ -17,6 +17,11 @@ public class HistoryController {
 
     // TODO: JWT 토큰을 이용한 사용자 인증 처리 구현
 
+    /**
+     * 특정 History 조회
+     * @param historyId
+     * @return
+     */
     @GetMapping("/{historyId}")
     public ResponseEntity<History> getHistory(@PathVariable Long historyId) {
         History history;
@@ -29,11 +34,17 @@ public class HistoryController {
         return ResponseEntity.ok(history);
     }
 
+    /**
+     * 사용자의 특정 타입의 전체 History 조회
+     * @param userId
+     * @param historyType
+     * @return
+     */
     @GetMapping("/users/{userId}/histories")
-    public ResponseEntity<List<History>> getHistories(@PathVariable Long userId) {
+    public ResponseEntity<List<History>> getHistories(@PathVariable Long userId, @RequestParam(name = "historyType") HistoryType historyType) {
         List<History> histories;
         try {
-            histories = historyService.findHistories(userId);
+            histories = historyService.findHistories(userId, historyType);
         } catch (IllegalArgumentException e) {
             log.error("History 조회 중 오류가 발생했습니다: ", e);
             return ResponseEntity.badRequest().build();
@@ -41,6 +52,11 @@ public class HistoryController {
         return ResponseEntity.ok(histories);
     }
 
+    /**
+     * History 생성
+     * @param historyId
+     * @return
+     */
     @DeleteMapping("/{historyId}")
     public ResponseEntity<Void> deleteHistory(@PathVariable Long historyId) {
         try {
