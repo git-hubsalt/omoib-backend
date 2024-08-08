@@ -73,6 +73,18 @@ public class HistoryService {
         historyRepository.deleteById(historyId);
     }
 
+    /**
+     * 특정 추천 기록의 소유자인지 확인합니다.
+     *
+     * @param userId
+     * @param historyId
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public boolean isHistoryOwner(Long userId, Long historyId) {
+        return findHistory(historyId).getUser().getId().equals(userId);
+    }
+
 
     private User findUser(Long userId) {
         return userService.findUser(userId).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
