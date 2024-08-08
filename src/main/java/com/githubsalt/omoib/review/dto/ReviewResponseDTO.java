@@ -1,4 +1,4 @@
-package com.githubsalt.omoib.dto;
+package com.githubsalt.omoib.review.dto;
 
 /**
  * @param historyId              추천 히스토리 ID

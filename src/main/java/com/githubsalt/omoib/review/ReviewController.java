@@ -1,8 +1,7 @@
-package com.githubsalt.omoib.controller;
+package com.githubsalt.omoib.review;
 
-import com.githubsalt.omoib.dto.ReviewRequestDTO;
-import com.githubsalt.omoib.dto.ReviewResponseDTO;
-import com.githubsalt.omoib.service.ReviewService;
+import com.githubsalt.omoib.review.dto.ReviewRequestDTO;
+import com.githubsalt.omoib.review.dto.ReviewResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

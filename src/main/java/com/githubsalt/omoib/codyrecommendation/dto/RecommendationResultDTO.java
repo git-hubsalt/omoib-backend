@@ -1,6 +1,6 @@
-package com.githubsalt.omoib.dto;
+package com.githubsalt.omoib.codyrecommendation.dto;
 
-import com.githubsalt.omoib.domain.Clothes;
+import com.githubsalt.omoib.global.domain.Clothes;
 
 import java.util.List;
 

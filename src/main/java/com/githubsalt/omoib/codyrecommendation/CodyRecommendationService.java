@@ -1,7 +1,7 @@
-package com.githubsalt.omoib.service;
+package com.githubsalt.omoib.codyrecommendation;
 
-import com.githubsalt.omoib.dto.RecommendationRequestDTO;
-import com.githubsalt.omoib.dto.RecommendationResultDTO;
+import com.githubsalt.omoib.codyrecommendation.dto.RecommendationRequestDTO;
+import com.githubsalt.omoib.codyrecommendation.dto.RecommendationResultDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

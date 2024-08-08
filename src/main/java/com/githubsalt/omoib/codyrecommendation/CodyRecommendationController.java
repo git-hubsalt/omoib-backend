@@ -1,10 +1,9 @@
-package com.githubsalt.omoib.controller;
+package com.githubsalt.omoib.codyrecommendation;
 
-import com.githubsalt.omoib.dto.RecommendationRequestDTO;
-import com.githubsalt.omoib.dto.RecommendationResponseDTO;
-import com.githubsalt.omoib.dto.RecommendationResultDTO;
-import com.githubsalt.omoib.service.CodyRecommendationService;
-import com.githubsalt.omoib.service.HistoryService;
+import com.githubsalt.omoib.codyrecommendation.dto.RecommendationRequestDTO;
+import com.githubsalt.omoib.codyrecommendation.dto.RecommendationResponseDTO;
+import com.githubsalt.omoib.codyrecommendation.dto.RecommendationResultDTO;
+import com.githubsalt.omoib.history.HistoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

@@ -1,5 +1,6 @@
-package com.githubsalt.omoib.domain;
+package com.githubsalt.omoib.global.domain;
 
+import com.githubsalt.omoib.history.History;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;

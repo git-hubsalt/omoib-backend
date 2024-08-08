@@ -1,9 +1,8 @@
-package com.githubsalt.omoib.service;
+package com.githubsalt.omoib.review;
 
-import com.githubsalt.omoib.domain.Review;
-import com.githubsalt.omoib.dto.ReviewRequestDTO;
-import com.githubsalt.omoib.dto.ReviewResponseDTO;
-import com.githubsalt.omoib.repository.ReviewRepository;
+import com.githubsalt.omoib.review.dto.ReviewRequestDTO;
+import com.githubsalt.omoib.review.dto.ReviewResponseDTO;
+import com.githubsalt.omoib.history.HistoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

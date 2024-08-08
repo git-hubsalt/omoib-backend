@@ -1,7 +1,5 @@
-package com.githubsalt.omoib.controller;
+package com.githubsalt.omoib.history;
 
-import com.githubsalt.omoib.domain.History;
-import com.githubsalt.omoib.service.HistoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

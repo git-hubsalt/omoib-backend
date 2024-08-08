@@ -1,4 +1,4 @@
-package com.githubsalt.omoib.dto;
+package com.githubsalt.omoib.codyrecommendation.dto;
 
 import jakarta.validation.constraints.NotNull;
 

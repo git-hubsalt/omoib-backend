@@ -1,4 +1,4 @@
-package com.githubsalt.omoib.domain;
+package com.githubsalt.omoib.user;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

@@ -1,4 +1,4 @@
-package com.githubsalt.omoib.dto;
+package com.githubsalt.omoib.review.dto;
 
 /**
  * @param userId                 사용자 ID

@@ -1,6 +1,5 @@
-package com.githubsalt.omoib.repository;
+package com.githubsalt.omoib.review;
 
-import com.githubsalt.omoib.domain.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
