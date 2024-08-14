@@ -1,75 +1,104 @@
 package com.githubsalt.omoib.global.config.security;
 
+import com.githubsalt.omoib.global.dto.CustomOAuth2User;
+import com.githubsalt.omoib.global.dto.CustomUserInfoDTO;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
-import java.util.Random;
 
 @Component
+@Slf4j
 public class JwtProvider {
 
-    @Value("${jwt.access-token.expire-length}")
-    private long accessTokenValidityInMilliseconds;
+    private final Key key;
+    private final long accessTokenExpireTime;
 
-    @Value("${jwt.refresh-token.expire-length}")
-    private long refreshTokenValidityInMilliseconds;
-
-    @Value("${jwt.token.secret-key}")
-    private String secretKey;
-
-    public String createAccessToken(String payload) {
-        return createToken(payload, accessTokenValidityInMilliseconds);
+    public JwtProvider(
+        @Value("${jwt.token.secret-key}") String secretKey,
+        @Value("${jwt.access-token.expire-time}") long accessTokenExpireTime
+    ) {
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        this.key = Keys.hmacShaKeyFor(keyBytes);
+        this.accessTokenExpireTime = accessTokenExpireTime;
     }
 
-    public String createRefreshToken() {
-        byte[] array = new byte[7];
-        new Random().nextBytes(array);
-        String generatedString = new String(array, StandardCharsets.UTF_8);
-        return createToken(generatedString, refreshTokenValidityInMilliseconds);
+    //Access Token 생성
+    public String createAccessToken(CustomUserInfoDTO userInfo) {
+        return createToken(userInfo, accessTokenExpireTime);
     }
 
-    public String createToken(String payload, long expireLength) {
-        Claims claims = Jwts.claims().setSubject(payload);
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + expireLength);
+    //JWT 생성
+    private String createToken(CustomUserInfoDTO userInfo, long expireTime) {
+        Claims claims = Jwts.claims();
+        claims.put("userId", userInfo.getUserId());
+
+        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime tokenValidity = now.plusSeconds(expireTime);
+
         return Jwts.builder()
             .setClaims(claims)
-            .setIssuedAt(now)
-            .setExpiration(validity)
-            .signWith(SignatureAlgorithm.HS256,secretKey)
+            .setIssuedAt(Date.from(now.toInstant()))
+            .setExpiration(Date.from(tokenValidity.toInstant()))
+            .signWith(key, SignatureAlgorithm.HS256)
             .compact();
     }
 
-    public String getPayload(String token){
-        try {
-            return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
-        } catch (ExpiredJwtException e) {
-            return e.getClaims().getSubject();
-        } catch (JwtException e){
-            throw new RuntimeException("유효하지 않은 토큰 입니다");
-        }
+    //Token에서 User ID 추출
+    public Long getUserId(String token) {
+        return parseClaims(token).get("memberId", Long.class);
     }
 
+    //JWT 검증
     public boolean validateToken(String token) {
         try {
-            Jws<Claims> claimsJws = Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token);
-            return !claimsJws.getBody().getExpiration().before(new Date());
-        } catch (JwtException | IllegalArgumentException exception) {
-            return false;
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            return true;
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+            log.info("Invalid JWT Token", e);
+        } catch (ExpiredJwtException e) {
+            log.info("Expired JWT Token", e);
+        } catch (UnsupportedJwtException e) {
+            log.info("Unsupported JWT Token", e);
+        } catch (IllegalArgumentException e) {
+            log.info("JWT claims string is empty.", e);
+        }
+        return false;
+    }
+
+    //JWT Claims 추출
+    private Claims parseClaims(String accessToken) {
+        try {
+            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
         }
     }
 
+    public String resolveToken(HttpServletRequest request) {
+        return request.getHeader("Authorization");
+    }
 
+    public Authentication getAuthentication(String token) {
+        Long userId = getUserId(token);
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 
+        CustomOAuth2User principal = new CustomOAuth2User(userId, authorities);
+
+        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+    }
 }

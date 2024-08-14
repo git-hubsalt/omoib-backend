@@ -1,11 +1,15 @@
 package com.githubsalt.omoib.user.service;
 
-import com.githubsalt.omoib.global.dto.KakaoTokenResponseDTO;
 import com.githubsalt.omoib.global.config.security.JwtProvider;
+import com.githubsalt.omoib.global.dto.CustomUserInfoDTO;
+import com.githubsalt.omoib.global.dto.KakaoTokenResponseDTO;
 import com.githubsalt.omoib.user.domain.User;
 import com.githubsalt.omoib.user.dto.LoginResponseDTO;
 import com.githubsalt.omoib.user.repository.UserRepository;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Header;
+import io.jsonwebtoken.Jwt;
+import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -22,7 +26,7 @@ import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
-public class KakaoService {
+public class LoginService {
 
     private final UserRepository userRepository;
     private final InMemoryClientRegistrationRepository inMemoryClientRegistrationRepository;
@@ -39,14 +43,13 @@ public class KakaoService {
     public LoginResponseDTO login(String code) {
         ClientRegistration provider = inMemoryClientRegistrationRepository.findByRegistrationId(clientName);
         KakaoTokenResponseDTO tokenResponse = getToken(code, provider);
-        String kakaoUserId = getKakaoUserId(tokenResponse.idToken, ISS, clientId);
-        User user = getUserProfile(kakaoUserId);
+        CustomUserInfoDTO userInfo = getUserInfo(tokenResponse);
 
-        String accessToken = jwtProvider.createAccessToken(String.valueOf(user.getId()));
+        String accessToken = jwtProvider.createAccessToken(userInfo);
 
         return LoginResponseDTO.builder()
             .token(accessToken)
-            .userId(user.getId())
+            .userId(userInfo.getUserId())
             .build();
     }
 
@@ -92,15 +95,17 @@ public class KakaoService {
         return splitToken[0] + "." + splitToken[1] + ".";
     }
 
-    private User getUserProfile(String kakaoUserId) {
-        User user = userRepository.findBySocialId(kakaoUserId).orElseGet(null);
+    private CustomUserInfoDTO getUserInfo(KakaoTokenResponseDTO tokenResponse) {
+        String kakaoUserId = getKakaoUserId(tokenResponse.idToken, ISS, clientId);
+//        User user = userRepository.findBySocialId(kakaoUserId).orElseGet(null);
+        User user = null;
         if (user == null) {
             user = User.builder()
                 .socialId(kakaoUserId)
                 .build();
-            userRepository.save(user);
+//            userRepository.save(user);
         }
-        return user;
+        return new CustomUserInfoDTO(user.getId());
     }
 
 }
