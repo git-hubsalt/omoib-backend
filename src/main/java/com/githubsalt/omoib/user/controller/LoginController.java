@@ -16,14 +16,12 @@ public class LoginController {
 
     private final LoginService loginService;
 
-    @GetMapping("/oauth/callback/kakao")
+    /**
+     * kakao login callback
+     */
+    @GetMapping("/login/oauth2/code/kakao")
     public ResponseEntity<LoginResponseDTO> kakaoLoginCallback(@RequestParam String code) {
         return ResponseEntity.ok(loginService.login(code));
-    }
-
-    @GetMapping("/test")
-    public ResponseEntity<Void> test() {
-        return ResponseEntity.ok().build();
     }
 
 }

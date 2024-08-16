@@ -22,16 +22,15 @@ import java.util.Collections;
 public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
     private final JwtProvider jwtProvider;
 
     private static final String[] AUTH_WHITELIST = {
         //swagger
         "/v3/api-docs/**",
         "/api-docs/**",
-        "/swagger-ui.html",
-
-        //kakao
-        "/oauth/callback/kakao"
+        "/swagger-ui.html"
     };
 
     @Bean
@@ -46,11 +45,11 @@ public class SecurityConfig {
                     .redirectionEndpoint(redirection -> redirection
                         .baseUri("/*/oauth2/code/*")
                     )
-                .userInfoEndpoint(userInfo -> userInfo
-                    .userService(customOAuth2UserService)
-                )
-//                .successHandler(oAuth2AuthenticationSuccessHandler())
-//                .failureHandler(oAuth2AuthenticationFailureHandler())
+                    .userInfoEndpoint(userInfo -> userInfo
+                        .userService(customOAuth2UserService)
+                    )
+                    .successHandler(oAuth2AuthenticationSuccessHandler)
+                    .failureHandler(oAuth2AuthenticationFailureHandler)
             );
 
         //csrf disable
