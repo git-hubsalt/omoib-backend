@@ -2,6 +2,7 @@ package com.githubsalt.omoib.user.controller;
 
 import com.githubsalt.omoib.user.dto.LoginResponseDTO;
 import com.githubsalt.omoib.user.service.LoginService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,9 +17,8 @@ public class LoginController {
 
     private final LoginService loginService;
 
-    /**
-     * kakao login callback
-     */
+    @Operation(summary = "카카오 로그인 redirect uri",
+        description = "카카오 로그인 후 인증 결과를 받아 처리하기 위한 uri로 프론트에서 호출 x")
     @GetMapping("/login/oauth2/code/kakao")
     public ResponseEntity<LoginResponseDTO> kakaoLoginCallback(@RequestParam String code) {
         return ResponseEntity.ok(loginService.login(code));
