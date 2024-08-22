@@ -4,6 +4,7 @@ import com.githubsalt.omoib.clothes.converter.ClothesTypeConverter;
 import com.githubsalt.omoib.clothes.converter.SeasonTypeConverter;
 import com.githubsalt.omoib.clothes.enums.ClothesType;
 import com.githubsalt.omoib.clothes.enums.SeasonType;
+import com.githubsalt.omoib.history.History;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -12,6 +13,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -37,7 +39,7 @@ public class Clothes {
     @Column(name = "update_at", nullable = false)
     private LocalDateTime updateAt;
 
-//    @ManyToMany(mappedBy = "clothesList")
-//    private List<History> historyList; // 이 옷을 추천받은 History 목록
+    @ManyToMany(mappedBy = "clothesList")
+    private List<History> historyList; // 이 옷을 추천받은 History 목록
 
 }

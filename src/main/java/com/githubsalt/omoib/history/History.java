@@ -1,6 +1,6 @@
 package com.githubsalt.omoib.history;
 
-import com.githubsalt.omoib.global.domain.Clothes;
+import com.githubsalt.omoib.clothes.domain.Clothes;
 import com.githubsalt.omoib.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
