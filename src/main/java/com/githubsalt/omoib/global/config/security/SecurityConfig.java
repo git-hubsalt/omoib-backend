@@ -25,12 +25,14 @@ public class SecurityConfig {
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
     private final JwtProvider jwtProvider;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     private static final String[] AUTH_WHITELIST = {
         //swagger
         "/v3/api-docs/**",
         "/api-docs/**",
-        "/swagger-ui.html"
+        "/swagger-ui.html",
+        "/swagger-ui/**"
     };
 
     @Bean
@@ -76,7 +78,12 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests((auth) -> auth
                 .requestMatchers(AUTH_WHITELIST).permitAll()       //모든 사용자에게 허용
-                .anyRequest().authenticated());                    //그 외 모든 요청은 인증된 사용자만 접근 가능
+                .anyRequest().authenticated());                    //그 외 모든 요청은 인증 시도
+
+        //인증되지 않은 사용자 처리
+        http
+            .exceptionHandling(exception -> exception
+                .authenticationEntryPoint(customAuthenticationEntryPoint));
 
         //세션 설정 : STATELESS
         http
