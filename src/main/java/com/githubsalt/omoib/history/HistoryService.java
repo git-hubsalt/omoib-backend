@@ -2,8 +2,8 @@ package com.githubsalt.omoib.history;
 
 import com.githubsalt.omoib.clothes.domain.Clothes;
 import com.githubsalt.omoib.codyrecommendation.dto.RecommendationResultDTO;
-import com.githubsalt.omoib.user.User;
-import com.githubsalt.omoib.user.UserService;
+import com.githubsalt.omoib.user.domain.User;
+import com.githubsalt.omoib.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

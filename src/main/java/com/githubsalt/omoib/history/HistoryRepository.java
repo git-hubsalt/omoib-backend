@@ -1,6 +1,6 @@
 package com.githubsalt.omoib.history;
 
-import com.githubsalt.omoib.user.User;
+import com.githubsalt.omoib.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

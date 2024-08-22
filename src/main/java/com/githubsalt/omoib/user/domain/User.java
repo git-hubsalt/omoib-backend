@@ -14,6 +14,8 @@ public class User {
     @Id
     private Long id;
 
+    private String name; // 사용자 이름
+
     private String socialId;
 
     @Builder

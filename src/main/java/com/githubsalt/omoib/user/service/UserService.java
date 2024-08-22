@@ -1,5 +1,7 @@
-package com.githubsalt.omoib.user;
+package com.githubsalt.omoib.user.service;
 
+import com.githubsalt.omoib.user.domain.User;
+import com.githubsalt.omoib.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
