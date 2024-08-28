@@ -16,6 +16,9 @@ import lombok.NoArgsConstructor;
 public class Review {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @OneToOne
     @JoinColumn(name = "history_id") // FK와 PK 역할을 하는 칼럼
     private History history;
