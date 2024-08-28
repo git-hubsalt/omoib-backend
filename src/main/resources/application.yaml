@@ -1,5 +1,5 @@
-config:
-  type: aws-parameterstore:/config/spring/
+#config:
+#  type: aws-parameterstore:/config/spring/
 
 spring:
   #yaml
