@@ -31,6 +31,6 @@ public class BodyMasking {
 
     @CreationTimestamp
     @Column(name = "create_at", nullable = false, updatable = false)
-    private LocalDateTime createAt;
+    private LocalDateTime createAt; // 서비스에선 YYMMDD-HHMMSS 타입으로 포맷
 
 }
