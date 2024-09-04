@@ -1,8 +1,6 @@
 package com.githubsalt.omoib.aws.lambda;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.githubsalt.omoib.aws.dto.MaskingLambdaDTO;
 import com.githubsalt.omoib.aws.dto.MaskingLambdaRequestDTO;
 import lombok.RequiredArgsConstructor;
@@ -35,18 +33,17 @@ public class LambdaController {
 
     // Lambda 호출 테스트용 API
     @PostMapping("/invoke")
-    public void invoke(@RequestParam(name = "functionName") String functionName, @RequestBody(required = false) String requestBody) {
-        log.info("Lambda call test with RequestBody : {}", requestBody);
-        lambdaService.invokeLambdaAsync(functionName, requestBody);
+    public void invoke(@RequestParam(name = "functionName") String functionName, @RequestBody MaskingLambdaRequestDTO dto) {
+        MaskingLambdaDTO maskingLambdaDTO = getMaskingLambdaDTO(dto);
+        log.info("Lambda call test with RequestBody : {}", dto);
+        lambdaService.invokeLambdaAsync(functionName, maskingLambdaDTO);
     }
 
+    @Deprecated
     @PostMapping("/invoke/{lambdaUrl}")
     public HttpResponse<String> invokeLambdaUrl(@PathVariable String lambdaUrl, @RequestBody MaskingLambdaRequestDTO dto) {
         log.info("Lambda call test to lambdaUrl {} with RequestBody : {}", lambdaUrl, dto);
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd-HHmmss");
-        String formattedNow = now.format(formatter);
-        MaskingLambdaDTO maskingLambdaDTO = new MaskingLambdaDTO(dto.username(), dto.row_image_url(), formattedNow);
+        MaskingLambdaDTO maskingLambdaDTO = getMaskingLambdaDTO(dto);
 
         String url = "https://" + lambdaUrl + "/";
         log.info("Request URL: {}", url);
@@ -56,7 +53,7 @@ public class LambdaController {
 
             // JSON 데이터 생성
             var objectMapper = new ObjectMapper();
-            String jsonData = nest(objectMapper.writeValueAsString(maskingLambdaDTO));
+            String jsonData = LambdaService.nest(objectMapper.writeValueAsString(maskingLambdaDTO));
             log.info("Request JSON: {}", jsonData);
 
             // HttpRequest 생성
@@ -75,17 +72,12 @@ public class LambdaController {
         return null;
     }
 
-    private String nest(String originalJson) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        // 기존 JSON 데이터를 ObjectNode로 파싱
-        ObjectNode originalNode = (ObjectNode) objectMapper.readTree(originalJson);
-
-        // 새 JSON 구조 생성
-        ObjectNode newJson = objectMapper.createObjectNode();
-        newJson.set("body-json", originalNode);
-
-        // 변환된 JSON 출력
-        return objectMapper.writeValueAsString(newJson);
+    private static MaskingLambdaDTO getMaskingLambdaDTO(MaskingLambdaRequestDTO dto) {
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd-HHmmss");
+        String formattedNow = now.format(formatter);
+        MaskingLambdaDTO maskingLambdaDTO = new MaskingLambdaDTO(dto.username(), dto.row_image_url(), formattedNow);
+        return maskingLambdaDTO;
     }
+
 }

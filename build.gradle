@@ -32,8 +32,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
 	// aws sdk
-	implementation 'io.awspring.cloud:spring-cloud-starter-aws-messaging:2.4.4'
-	implementation 'com.amazonaws:aws-java-sdk-lambda:1.12.762'
+	// https://mvnrepository.com/artifact/io.awspring.cloud/spring-cloud-aws-starter-sqs
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-sqs:3.1.1'
+ 	implementation 'com.amazonaws:aws-java-sdk-lambda:1.12.762'
 
 	//jwt
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
