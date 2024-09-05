@@ -97,13 +97,12 @@ public class LoginService {
 
     private CustomUserInfoDTO getUserInfo(KakaoTokenResponseDTO tokenResponse) {
         String kakaoUserId = getKakaoUserId(tokenResponse.idToken, ISS, clientId);
-//        User user = userRepository.findBySocialId(kakaoUserId).orElseGet(null);
-        User user = null;
+        User user = userRepository.findBySocialId(kakaoUserId).orElseGet(null);
         if (user == null) {
             user = User.builder()
                 .socialId(kakaoUserId)
                 .build();
-//            userRepository.save(user);
+            userRepository.save(user);
         }
         return new CustomUserInfoDTO(user.getId());
     }
