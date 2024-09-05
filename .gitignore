@@ -6,9 +6,9 @@ build/
 !**/src/test/**/build/
 
 ### config ###
-#application.yml
-#application.yaml
-#application.properties
+application-local.yml
+application-local.yaml
+application-local.properties
 
 ### STS ###
 .apt_generated

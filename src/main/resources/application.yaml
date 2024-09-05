@@ -1,10 +1,16 @@
-config:
-  type: aws-parameterstore:/config/spring/
+# default
+spring:
+  profiles:
+    active: local
+
+---
 
 spring:
-  #yaml
   config:
-    import: ${config.type}
+    activate:
+      on-profile: prod
+    import: aws-parameterstore:/config/spring/
+
   #kakao
   security:
     oauth2:
@@ -13,7 +19,7 @@ spring:
           kakao:
             client-id: ${kakao.client-id}
             client-secret: ${kakao.client-secret}
-            redirect-uri: http://localhost:8080/{action}/oauth2/code/{registrationId}
+            redirect-uri: ${server.url}/{action}/oauth2/code/{registrationId}
             authorization-grant-type: authorization_code
             client-authentication-method: client_secret_post
             client-name: kakao
@@ -23,6 +29,20 @@ spring:
             token-uri: https://kauth.kakao.com/oauth/token
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
+
+  #DB
+  datasource:
+    url: ${database.url}
+    username: ${database.username}
+    password: ${database.password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        default_batch_fetch_size: 1000
+
 jwt:
   token:
     secret-key: ${jwt.secret-key}
