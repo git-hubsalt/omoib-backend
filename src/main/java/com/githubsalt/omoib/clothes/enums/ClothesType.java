@@ -5,7 +5,8 @@ import com.githubsalt.omoib.global.interfaces.ValuedEnum;
 public enum ClothesType implements ValuedEnum {
     상의(1),
     하의(2),
-    기타(3);
+    신발(3),
+    기타(4);
 
     private final int value;
 

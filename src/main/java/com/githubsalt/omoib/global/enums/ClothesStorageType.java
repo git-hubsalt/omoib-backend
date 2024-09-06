@@ -1,6 +1,20 @@
 package com.githubsalt.omoib.global.enums;
 
-public enum ClothesStorageType {
-    Closet,     //옷장
-    Wish        //위시리스트
+import com.githubsalt.omoib.global.interfaces.ValuedEnum;
+
+public enum ClothesStorageType implements ValuedEnum {
+    CLOSET(1),     //옷장
+    WISH(2)        //위시리스트
+    ;
+
+    private final int value;
+
+    ClothesStorageType(int value) {
+        this.value = value;
+    }
+
+    @Override
+    public Integer getValue() {
+        return this.value;
+    }
 }
