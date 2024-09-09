@@ -24,8 +24,8 @@ import java.util.Optional;
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JwtProvider jwtProvider;
-    @Value("${cors.frontend}")
-    private String corsFrontend;
+    @Value("${login.redirect.url}")
+    private String loginRedirectUrl;
     private final UserRepository userRepository;
 
     /**
@@ -53,7 +53,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             isNewUser = user.getName() == null;
         }
         String accessToken = jwtProvider.createAccessToken(new CustomUserInfoDTO(userId));
-        getRedirectStrategy().sendRedirect(request, response, getRedirectUrl(corsFrontend, accessToken, isNewUser));
+        getRedirectStrategy().sendRedirect(request, response, getRedirectUrl(loginRedirectUrl, accessToken, isNewUser));
     }
 
     private String getRedirectUrl(String targetUrl, String token, boolean isNewUser) {

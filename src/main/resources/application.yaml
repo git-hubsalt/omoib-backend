@@ -49,5 +49,6 @@ jwt:
   access-token:
     expire-time: 1800000
 
-cors:
-  frontend: http://localhost:3000
+login:
+  redirect:
+    url: ${login.redirect-url}
