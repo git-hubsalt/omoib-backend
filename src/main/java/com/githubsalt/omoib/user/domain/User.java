@@ -21,8 +21,20 @@ public class User {
     @Column(name = "social_id")
     private String socialId;
 
+    @Column(name = "row_image_path")
+    private String rowImagePath;
+
     @Builder
     public User(String socialId) {
         this.socialId = socialId;
+    }
+
+    public void updateUser(String name, String rowImagePath) {
+        if (name != null) {
+            this.name = name;
+        }
+        if (rowImagePath != null) {
+            this.rowImagePath = rowImagePath;
+        }
     }
 }
