@@ -42,6 +42,7 @@
     ],
     "family": "githubsalt-backend",
     "executionRoleArn": "arn:aws:iam::565393031158:role/ecsTaskExecutionRole",
+    "taskRoleArn": "arn:aws:iam::565393031158:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
     "revision": 2,
     "volumes": [],

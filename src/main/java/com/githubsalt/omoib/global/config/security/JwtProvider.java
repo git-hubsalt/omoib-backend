@@ -64,6 +64,10 @@ public class JwtProvider {
         return parseClaims(token).get("memberId", Long.class);
     }
 
+    public Long getUserId(HttpServletRequest request) {
+        return getUserId(resolveToken(request));
+    }
+
     //JWT 검증
     public boolean validateToken(String token) {
         try {
