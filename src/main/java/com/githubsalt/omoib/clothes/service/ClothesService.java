@@ -1,5 +1,7 @@
 package com.githubsalt.omoib.clothes.service;
 
+import com.githubsalt.omoib.clothes.domain.Clothes;
+import com.githubsalt.omoib.clothes.dto.BriefClothesDTO;
 import com.githubsalt.omoib.clothes.dto.RegisterClothesRequestDTO;
 import com.githubsalt.omoib.clothes.dto.UpdateClothesRequestDTO;
 import com.githubsalt.omoib.clothes.dto.GetClothesListDTO;
@@ -30,6 +32,15 @@ public class ClothesService {
 
     public void removeClothes(Long clothesId) {
         //TODO
+    }
+
+    public Clothes getClothes(Long clothesId) {
+        return clothesRepository.findById(clothesId).orElse(null);
+    }
+
+    public BriefClothesDTO getBriefClothes(Long clothesId) {
+        //TODO
+        return new BriefClothesDTO(1L, "name", null, null, "url");
     }
 
 }

@@ -1,6 +1,7 @@
 package com.githubsalt.omoib.history;
 
 import com.githubsalt.omoib.clothes.domain.Clothes;
+import com.githubsalt.omoib.history.enums.HistoryStatus;
 import com.githubsalt.omoib.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -35,6 +36,9 @@ public class History {
             inverseJoinColumns = @JoinColumn(name = "clothes_id")
     )
     private List<Clothes> clothesList; // 추천 받은 옷들
+
+    @Enumerated(EnumType.STRING)
+    private HistoryStatus status; // 추천 상태
 
     private String fittingImageURL; // 착용한 옷들의 이미지 URL; 추천 타입이 FITTING일 때만 사용
 
