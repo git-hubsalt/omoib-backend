@@ -1,5 +1,6 @@
 package com.githubsalt.omoib.clothes.service;
 
+import com.githubsalt.omoib.aws.s3.PresignedURLBuilder;
 import com.githubsalt.omoib.clothes.domain.Clothes;
 import com.githubsalt.omoib.clothes.dto.BriefClothesDTO;
 import com.githubsalt.omoib.clothes.dto.GetClothesResponseDTO;
@@ -23,6 +24,7 @@ import java.util.Map;
 public class ClothesService {
 
     private final ClothesRepository clothesRepository;
+    private final PresignedURLBuilder presignedURLBuilder;
 
     @Transactional(readOnly = true)
     public GetClothesResponseDTO getClothesList(ClothesStorageType clothesStorageType) {
@@ -107,8 +109,14 @@ public class ClothesService {
     }
 
     public BriefClothesDTO getBriefClothes(Long clothesId) {
-        //TODO
-        return new BriefClothesDTO(1L, "name", null, null, "url");
+        Clothes clothes = clothesRepository.findById(clothesId).orElseThrow(() -> new IllegalArgumentException("Clothes not found"));
+        return new BriefClothesDTO(
+                clothes.getId(),
+                clothes.getName(),
+                clothes.getClothesType(),
+                clothes.getSeasonType(),
+                presignedURLBuilder.buildPresignedURL(clothes.getImagePath()).toString()
+        );
     }
 
 }
