@@ -21,74 +21,74 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private static final String[] AUTH_WHITELIST = {
+            //swagger
+            "/v3/api-docs/**",
+            "/api-docs/**",
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/lambda/**",
+    };
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
     private final JwtProvider jwtProvider;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
-    private static final String[] AUTH_WHITELIST = {
-        //swagger
-        "/v3/api-docs/**",
-        "/api-docs/**",
-        "/swagger-ui.html",
-        "/swagger-ui/**"
-    };
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         //oauth2
         http
-            .oauth2Login(oauth2 -> oauth2
-                    .authorizationEndpoint(authorization -> authorization
-                            .baseUri("/oauth2/authorization")
+                .oauth2Login(oauth2 -> oauth2
+                                .authorizationEndpoint(authorization -> authorization
+                                                .baseUri("/oauth2/authorization")
 //                    .authorizationRequestRepository(authorizationRequestRepository())
-                    )
-                    .redirectionEndpoint(redirection -> redirection
-                        .baseUri("/*/oauth2/code/*")
-                    )
-                    .userInfoEndpoint(userInfo -> userInfo
-                        .userService(customOAuth2UserService)
-                    )
-                    .successHandler(oAuth2AuthenticationSuccessHandler)
-                    .failureHandler(oAuth2AuthenticationFailureHandler)
-            );
+                                )
+                                .redirectionEndpoint(redirection -> redirection
+                                        .baseUri("/*/oauth2/code/*")
+                                )
+                                .userInfoEndpoint(userInfo -> userInfo
+                                        .userService(customOAuth2UserService)
+                                )
+                                .successHandler(oAuth2AuthenticationSuccessHandler)
+                                .failureHandler(oAuth2AuthenticationFailureHandler)
+                );
 
         //csrf disable
         http
-            .csrf(AbstractHttpConfigurer::disable);
+                .csrf(AbstractHttpConfigurer::disable);
 
         //cors
         http
-            .cors(Customizer.withDefaults());
+                .cors(Customizer.withDefaults());
 
         //From 로그인 방식 disable
         http
-            .formLogin(AbstractHttpConfigurer::disable);
+                .formLogin(AbstractHttpConfigurer::disable);
 
         //HTTP Basic 인증 방식 disable
         http
-            .httpBasic(AbstractHttpConfigurer::disable);
+                .httpBasic(AbstractHttpConfigurer::disable);
 
         //JWTFilter 추가
         http
-            .addFilterAfter(new JwtAuthenticationFilter(jwtProvider), OAuth2LoginAuthenticationFilter.class);
+                .addFilterAfter(new JwtAuthenticationFilter(jwtProvider), OAuth2LoginAuthenticationFilter.class);
 
         //경로별 인가 작업
         http
-            .authorizeHttpRequests((auth) -> auth
-                .requestMatchers(AUTH_WHITELIST).permitAll()       //모든 사용자에게 허용
-                .anyRequest().authenticated());                    //그 외 모든 요청은 인증 시도
+                .authorizeHttpRequests((auth) -> auth
+                        .requestMatchers(AUTH_WHITELIST).permitAll()       //모든 사용자에게 허용
+                        .anyRequest().authenticated());                    //그 외 모든 요청은 인증 시도
 
         //인증되지 않은 사용자 처리
         http
-            .exceptionHandling(exception -> exception
-                .authenticationEntryPoint(customAuthenticationEntryPoint));
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(customAuthenticationEntryPoint));
 
         //세션 설정 : STATELESS
         http
-            .sessionManagement((session) -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .sessionManagement((session) -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }

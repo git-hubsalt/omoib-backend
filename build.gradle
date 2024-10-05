@@ -31,6 +31,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+	// aws sdk
+	// https://mvnrepository.com/artifact/io.awspring.cloud/spring-cloud-aws-starter-sqs
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-sqs:3.1.1'
+ 	implementation 'com.amazonaws:aws-java-sdk-lambda:1.12.762'
+	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.771'
+
 	//jwt
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'

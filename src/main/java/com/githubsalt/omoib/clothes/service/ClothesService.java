@@ -93,4 +93,13 @@ public class ClothesService {
         clothesRepository.delete(clothes);
     }
 
+    public Clothes getClothes(Long clothesId) {
+        return clothesRepository.findById(clothesId).orElse(null);
+    }
+
+    public BriefClothesDTO getBriefClothes(Long clothesId) {
+        //TODO
+        return new BriefClothesDTO(1L, "name", null, null, "url");
+    }
+
 }
