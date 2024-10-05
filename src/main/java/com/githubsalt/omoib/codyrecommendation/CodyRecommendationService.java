@@ -3,6 +3,7 @@ package com.githubsalt.omoib.codyrecommendation;
 import com.githubsalt.omoib.aws.sqs.dto.SqsRecommendResponseMessageDTO;
 import com.githubsalt.omoib.clothes.domain.Clothes;
 import com.githubsalt.omoib.clothes.dto.BriefClothesDTO;
+import com.githubsalt.omoib.clothes.dto.GetClothesResponseDTO;
 import com.githubsalt.omoib.clothes.service.ClothesService;
 import com.githubsalt.omoib.codyrecommendation.dto.RecommendationAIRequestDTO;
 import com.githubsalt.omoib.codyrecommendation.dto.RecommendationRequestDTO;
@@ -34,11 +35,11 @@ public class CodyRecommendationService {
 
         String timestamp = historyService.createPendingHistory(requestDTO.userId(), HistoryType.RECOMMENDATION);
 
-        // TODO
-        List<Clothes> clothesList = clothesService.getClothesList(requestDTO.storageType());
+        GetClothesResponseDTO clothesResponseDTO = clothesService.getClothesList(requestDTO.storageType());
+        List<GetClothesResponseDTO.ClothesItemDTO> allClothesItems = clothesResponseDTO.getAllClothesItems();
         List<BriefClothesDTO> briefClothesList = new ArrayList<>();
-        for (Clothes clothes : clothesList) {
-            briefClothesList.add(clothesService.getBriefClothes(clothes.getId()));
+        for (GetClothesResponseDTO.ClothesItemDTO clothesItemDTO : allClothesItems) {
+            briefClothesList.add(clothesService.getBriefClothes(clothesItemDTO.id()));
         }
 
         List<HistoryClothesDTO> exclude = historyService.getHistoryClothes(requestDTO.userId(), HistoryType.RECOMMENDATION);

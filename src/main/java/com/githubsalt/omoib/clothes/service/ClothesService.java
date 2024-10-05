@@ -1,6 +1,7 @@
 package com.githubsalt.omoib.clothes.service;
 
 import com.githubsalt.omoib.clothes.domain.Clothes;
+import com.githubsalt.omoib.clothes.dto.BriefClothesDTO;
 import com.githubsalt.omoib.clothes.dto.GetClothesResponseDTO;
 import com.githubsalt.omoib.clothes.dto.RegisterClothesRequestDTO;
 import com.githubsalt.omoib.clothes.dto.UpdateClothesRequestDTO;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -24,31 +26,38 @@ public class ClothesService {
 
     @Transactional(readOnly = true)
     public GetClothesResponseDTO getClothesList(ClothesStorageType clothesStorageType) {
+        Map<ClothesType, ArrayList<GetClothesResponseDTO.ClothesItemDTO>> typeArrayListMap = Map.of(
+                ClothesType.upper, new ArrayList<>(),
+                ClothesType.lower, new ArrayList<>(),
+                ClothesType.shoes, new ArrayList<>(),
+                ClothesType.bag, new ArrayList<>(),
+                ClothesType.cap, new ArrayList<>(),
+                ClothesType.outer, new ArrayList<>(),
+                ClothesType.overall, new ArrayList<>()
+        );
         List<Clothes> clothes = clothesRepository.findAllByClothesStorageType(clothesStorageType);
-        ArrayList<GetClothesResponseDTO.ClothesItemDTO> tops = new ArrayList<>();
-        ArrayList<GetClothesResponseDTO.ClothesItemDTO> bottoms = new ArrayList<>();
-        ArrayList<GetClothesResponseDTO.ClothesItemDTO> shoes = new ArrayList<>();
-        ArrayList<GetClothesResponseDTO.ClothesItemDTO> etcs = new ArrayList<>();
         for (Clothes cloth : clothes) {
             ArrayList<String> tagList = new ArrayList<>();
             tagList.add(cloth.getSeasonType().name());
             GetClothesResponseDTO.ClothesItemDTO clothesItemDTO = new GetClothesResponseDTO.ClothesItemDTO(
+                cloth.getId(),
                 cloth.getName(),
                 cloth.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")),
                 tagList,
                 cloth.getImagePath()
             );
-            if (cloth.getClothesType() == ClothesType.상의) {
-                tops.add(clothesItemDTO);
-            } else if (cloth.getClothesType() == ClothesType.하의) {
-                bottoms.add(clothesItemDTO);
-            } else if (cloth.getClothesType() == ClothesType.신발) {
-                shoes.add(clothesItemDTO);
-            } else {
-                etcs.add(clothesItemDTO);
-            }
+
+            typeArrayListMap.get(cloth.getClothesType()).add(clothesItemDTO);
         }
-        return new GetClothesResponseDTO(tops, bottoms, shoes, etcs);
+        return new GetClothesResponseDTO(
+            typeArrayListMap.get(ClothesType.upper),
+            typeArrayListMap.get(ClothesType.lower),
+            typeArrayListMap.get(ClothesType.shoes),
+            typeArrayListMap.get(ClothesType.bag),
+            typeArrayListMap.get(ClothesType.cap),
+            typeArrayListMap.get(ClothesType.outer),
+            typeArrayListMap.get(ClothesType.overall)
+        );
     }
 
     @Transactional
