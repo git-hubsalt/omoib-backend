@@ -26,8 +26,6 @@ public class LambdaController {
     @PostMapping("/callback")
     public void handleLambdaCallback(@RequestBody String result) {
         // Lambda 결과 처리 로직
-
-        // TODO 콜백 처리 시 결과 필드의 인덱스나 네임 필드를 읽고, 그에 해당하는 서비스로 결과를 전달하는 방식으로 구현할듯
         log.info("Received Lambda result: {}", result);
     }
 

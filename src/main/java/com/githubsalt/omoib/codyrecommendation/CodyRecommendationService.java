@@ -36,7 +36,13 @@ public class CodyRecommendationService {
         String timestamp = historyService.createPendingHistory(requestDTO.userId(), HistoryType.RECOMMENDATION);
 
         GetClothesResponseDTO clothesResponseDTO = clothesService.getClothesList(requestDTO.storageType());
-        List<GetClothesResponseDTO.ClothesItemDTO> allClothesItems = clothesResponseDTO.getAllClothesItems();
+
+        // Issue #8: 추천 모델의 경우의 수 과다 문제로 추천 모델에 들어가는 옷의 종류를 제한함.
+        List<GetClothesResponseDTO.ClothesItemDTO> allClothesItems = new ArrayList<>();
+        allClothesItems.addAll(clothesResponseDTO.upper());
+        allClothesItems.addAll(clothesResponseDTO.lower());
+        allClothesItems.addAll(clothesResponseDTO.overall());
+
         List<BriefClothesDTO> briefClothesList = new ArrayList<>();
         for (GetClothesResponseDTO.ClothesItemDTO clothesItemDTO : allClothesItems) {
             briefClothesList.add(clothesService.getBriefClothes(clothesItemDTO.id()));
