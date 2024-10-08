@@ -1,5 +1,6 @@
 package com.githubsalt.omoib.codyrecommendation;
 
+import com.githubsalt.omoib.aws.lambda.LambdaService;
 import com.githubsalt.omoib.aws.sqs.dto.SqsRecommendResponseMessageDTO;
 import com.githubsalt.omoib.clothes.domain.Clothes;
 import com.githubsalt.omoib.clothes.dto.BriefClothesDTO;
@@ -26,6 +27,7 @@ public class CodyRecommendationService {
 
     private final ClothesService clothesService;
     private final HistoryService historyService;
+    private final LambdaService lambdaService;
 
     public void recommend(RecommendationRequestDTO requestDTO) {
 
@@ -55,7 +57,7 @@ public class CodyRecommendationService {
                 timestamp,
                 briefClothesList, exclude);
 
-        // TODO AI endpoint 호출
+        lambdaService.invokeLambdaAsync("the-lambda-name-which-is-not-created-yet", aiModelRequestDTO); // todo: lambda function name
     }
 
     public void response(SqsRecommendResponseMessageDTO message) {
