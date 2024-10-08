@@ -1,8 +1,8 @@
 package com.githubsalt.omoib.aws.lambda;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.githubsalt.omoib.aws.dto.MaskingLambdaDTO;
-import com.githubsalt.omoib.aws.dto.MaskingLambdaRequestDTO;
+import com.githubsalt.omoib.bodymasking.dto.MaskingLambdaDTO;
+import com.githubsalt.omoib.bodymasking.dto.MaskingLambdaRequestDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -75,6 +75,7 @@ public class LambdaController {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd-HHmmss");
         String formattedNow = now.format(formatter);
         MaskingLambdaDTO maskingLambdaDTO = new MaskingLambdaDTO(dto.username(), dto.row_image_url(), formattedNow);
+        log.info("MaskingLambdaDTO: {}", maskingLambdaDTO);
         return maskingLambdaDTO;
     }
 
