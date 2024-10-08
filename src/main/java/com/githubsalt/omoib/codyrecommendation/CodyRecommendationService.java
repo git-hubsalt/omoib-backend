@@ -1,5 +1,6 @@
 package com.githubsalt.omoib.codyrecommendation;
 
+import com.githubsalt.omoib.aws.lambda.LambdaService;
 import com.githubsalt.omoib.aws.sqs.dto.SqsRecommendResponseMessageDTO;
 import com.githubsalt.omoib.clothes.domain.Clothes;
 import com.githubsalt.omoib.clothes.dto.BriefClothesDTO;
@@ -26,6 +27,7 @@ public class CodyRecommendationService {
 
     private final ClothesService clothesService;
     private final HistoryService historyService;
+    private final LambdaService lambdaService;
 
     public void recommend(RecommendationRequestDTO requestDTO) {
 
@@ -36,7 +38,13 @@ public class CodyRecommendationService {
         String timestamp = historyService.createPendingHistory(requestDTO.userId(), HistoryType.RECOMMENDATION);
 
         GetClothesResponseDTO clothesResponseDTO = clothesService.getClothesList(requestDTO.storageType());
-        List<GetClothesResponseDTO.ClothesItemDTO> allClothesItems = clothesResponseDTO.getAllClothesItems();
+
+        // Issue #8: 추천 모델의 경우의 수 과다 문제로 추천 모델에 들어가는 옷의 종류를 제한함.
+        List<GetClothesResponseDTO.ClothesItemDTO> allClothesItems = new ArrayList<>();
+        allClothesItems.addAll(clothesResponseDTO.upper());
+        allClothesItems.addAll(clothesResponseDTO.lower());
+        allClothesItems.addAll(clothesResponseDTO.overall());
+
         List<BriefClothesDTO> briefClothesList = new ArrayList<>();
         for (GetClothesResponseDTO.ClothesItemDTO clothesItemDTO : allClothesItems) {
             briefClothesList.add(clothesService.getBriefClothes(clothesItemDTO.id()));
@@ -49,7 +57,7 @@ public class CodyRecommendationService {
                 timestamp,
                 briefClothesList, exclude);
 
-        // TODO AI endpoint 호출
+        lambdaService.invokeLambdaAsync("the-lambda-name-which-is-not-created-yet", aiModelRequestDTO); // todo: lambda function name
     }
 
     public void response(SqsRecommendResponseMessageDTO message) {

@@ -7,7 +7,7 @@ import com.amazonaws.services.lambda.model.InvokeResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.githubsalt.omoib.aws.dto.MaskingLambdaDTO;
+import com.githubsalt.omoib.aws.dto.AWSLambdaInvocable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ public class LambdaService {
 
     private final AWSLambda awsLambda;
 
-    public void invokeLambdaAsync(String functionName, MaskingLambdaDTO payload) {
+    public void invokeLambdaAsync(String functionName, AWSLambdaInvocable payload) {
 
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString;

@@ -1,8 +1,8 @@
 package com.githubsalt.omoib.aws.lambda;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.githubsalt.omoib.aws.dto.MaskingLambdaDTO;
-import com.githubsalt.omoib.aws.dto.MaskingLambdaRequestDTO;
+import com.githubsalt.omoib.bodymasking.dto.MaskingLambdaDTO;
+import com.githubsalt.omoib.bodymasking.dto.MaskingLambdaRequestDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -26,8 +26,6 @@ public class LambdaController {
     @PostMapping("/callback")
     public void handleLambdaCallback(@RequestBody String result) {
         // Lambda 결과 처리 로직
-
-        // TODO 콜백 처리 시 결과 필드의 인덱스나 네임 필드를 읽고, 그에 해당하는 서비스로 결과를 전달하는 방식으로 구현할듯
         log.info("Received Lambda result: {}", result);
     }
 
@@ -77,6 +75,7 @@ public class LambdaController {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd-HHmmss");
         String formattedNow = now.format(formatter);
         MaskingLambdaDTO maskingLambdaDTO = new MaskingLambdaDTO(dto.username(), dto.row_image_url(), formattedNow);
+        log.info("MaskingLambdaDTO: {}", maskingLambdaDTO);
         return maskingLambdaDTO;
     }
 
