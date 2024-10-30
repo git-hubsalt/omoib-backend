@@ -27,6 +27,7 @@ public class ClothesService {
     private final ClothesRepository clothesRepository;
     private final PresignedURLBuilder presignedURLBuilder;
     private final AmazonS3Service amazonS3Service;
+    private final AesEncryptionUtil aesEncryptionUtil;
 
     @Transactional(readOnly = true)
     public GetClothesResponseDTO getClothesList(ClothesStorageType clothesStorageType) {
@@ -138,7 +139,7 @@ public class ClothesService {
             ClothesStorageType clothesStorageType,
             Long userId
     ) {
-        String name = AesEncryptionUtil.encrypt(clothesId.toString());
+        String name = aesEncryptionUtil.encrypt(clothesId.toString());
         return "users/"
                 + userId
                 + "/items/"

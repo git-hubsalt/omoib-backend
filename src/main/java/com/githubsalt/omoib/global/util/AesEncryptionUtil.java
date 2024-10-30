@@ -4,16 +4,19 @@ import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AesEncryptionUtil {
     private static final String ALGORITHM = "AES";
     private static final String TRANSFORMATION = "AES/CBC/PKCS5Padding";
 
-    // 고정된 비밀 키 (16 바이트 = 128 비트)
-    private static final String SECRET_KEY = "1234567890123456"; // 키는 안전한 방법으로 저장해야 함
+    @Value("${aes.encryption.secret-key}")
+    private String SECRET_KEY;
     private static final int IV_SIZE = 16;
 
-    public static String encrypt(String data) {
+    public String encrypt(String data) {
         try {
             SecretKeySpec keySpec = new SecretKeySpec(SECRET_KEY.getBytes(), ALGORITHM);
             Cipher cipher = Cipher.getInstance(TRANSFORMATION);
@@ -25,7 +28,7 @@ public class AesEncryptionUtil {
         }
     }
 
-    public static String decrypt(String encryptedData) throws Exception {
+    public String decrypt(String encryptedData) throws Exception {
         SecretKeySpec keySpec = new SecretKeySpec(SECRET_KEY.getBytes(), ALGORITHM);
         Cipher cipher = Cipher.getInstance(TRANSFORMATION);
         cipher.init(Cipher.DECRYPT_MODE, keySpec, new IvParameterSpec(new byte[IV_SIZE]));

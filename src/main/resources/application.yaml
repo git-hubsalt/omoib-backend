@@ -52,3 +52,7 @@ jwt:
 login:
   redirect:
     url: ${login.redirect-url}
+
+aes:
+  encryption:
+    secret-key: ${aes.secret-key}
