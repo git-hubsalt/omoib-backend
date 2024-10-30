@@ -39,7 +39,7 @@ public class Clothes {
     @Column(name = "season_type", nullable = false)
     private SeasonType seasonType;      //계절
 
-    @Column(name = "image_path", nullable = false)
+    @Column(name = "image_path")
     private String imagePath; // S3 Presigned URL
 
     @Column(name = "clothes_storage_type", nullable = false)

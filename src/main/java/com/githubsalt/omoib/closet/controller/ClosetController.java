@@ -10,7 +10,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -35,10 +42,12 @@ public class ClosetController {
         description = "옷장에 새로운 옷을 등록합니다.")
     @PostMapping
     public ResponseEntity<Void> registerClothes(
+            HttpServletRequest httpServletRequest,
         @RequestPart RegisterClothesRequestDTO requestDTO,
         @RequestPart MultipartFile image
     ) {
-        clothesService.registerClothes(requestDTO, image, clothesStorageType);
+        Long userId = jwtProvider.getUserId(httpServletRequest);
+        clothesService.registerClothes(requestDTO, image, clothesStorageType, userId);
         return ResponseEntity.ok().build();
     }
 
@@ -50,7 +59,7 @@ public class ClosetController {
         @PathVariable("id") Long clothesId,
         @RequestPart UpdateClothesRequestDTO requestDTO,
         @RequestPart MultipartFile image
-    ) throws Exception {
+    ) {
         Long userId = jwtProvider.getUserId(httpServletRequest);
         clothesService.updateClothes(userId, clothesId, requestDTO, image);
         return ResponseEntity.ok().build();

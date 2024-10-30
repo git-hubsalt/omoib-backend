@@ -9,15 +9,16 @@ import com.githubsalt.omoib.clothes.dto.UpdateClothesRequestDTO;
 import com.githubsalt.omoib.clothes.enums.ClothesType;
 import com.githubsalt.omoib.clothes.repository.ClothesRepository;
 import com.githubsalt.omoib.global.enums.ClothesStorageType;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
+import com.githubsalt.omoib.global.service.AmazonS3Service;
+import com.githubsalt.omoib.global.util.AesEncryptionUtil;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +26,7 @@ public class ClothesService {
 
     private final ClothesRepository clothesRepository;
     private final PresignedURLBuilder presignedURLBuilder;
+    private final AmazonS3Service amazonS3Service;
 
     @Transactional(readOnly = true)
     public GetClothesResponseDTO getClothesList(ClothesStorageType clothesStorageType) {
@@ -66,18 +68,20 @@ public class ClothesService {
     public void registerClothes(
         RegisterClothesRequestDTO requestDTO,
         MultipartFile image,
-        ClothesStorageType clothesStorageType
+        ClothesStorageType clothesStorageType,
+        Long userId
     ) {
-        String imagePath = "";  //TODO s3 save image
+        checkDuplicateClothesName(requestDTO);
         Clothes clothes = clothesRepository.save(
             Clothes.builder()
                 .name(requestDTO.name())
                 .clothesType(requestDTO.clothesType())
                 .seasonType(requestDTO.seasonType())
-                .imagePath(imagePath)
                 .clothesStorageType(clothesStorageType)
                 .build()
         );
+        String imagePath = uploadS3Image(image, clothes.getId(), clothesStorageType, userId);
+        clothes.updateImage(imagePath);
         //TODO 벡터 lambda
     }
 
@@ -91,7 +95,7 @@ public class ClothesService {
         Clothes clothes = clothesRepository.findByIdAndUserId(clothesId, userId)
             .orElseThrow(() -> new IllegalArgumentException("Clothes not found"));
         if (image != null) {
-            String imagePath = "";  //TODO s3 save image
+            String imagePath = uploadS3Image(image, clothes.getId(), clothes.getClothesStorageType(), userId);
             clothes.updateImage(imagePath);
         }
         clothes.update(requestDTO);
@@ -117,6 +121,41 @@ public class ClothesService {
                 clothes.getSeasonType(),
                 presignedURLBuilder.buildPresignedURL(clothes.getImagePath()).toString()
         );
+    }
+
+    private String uploadS3Image(
+            MultipartFile image,
+            Long clothesId,
+            ClothesStorageType clothesStorageType,
+            Long userId
+    ) {
+        String key = generateImageS3Key(clothesId, clothesStorageType, userId);
+        return amazonS3Service.upload(image, key);
+    }
+
+    private String generateImageS3Key(
+            Long clothesId,
+            ClothesStorageType clothesStorageType,
+            Long userId
+    ) {
+        String name = AesEncryptionUtil.encrypt(clothesId.toString());
+        return "users/"
+                + userId
+                + "/items/"
+                + clothesStorageType.name().toLowerCase()
+                + "/"
+                + name;
+    }
+
+    private void checkDuplicateClothesName(RegisterClothesRequestDTO requestDTO) {
+        boolean isDuplicateName = clothesRepository.existsByNameAndClothesTypeAndSeasonType(
+                requestDTO.name(),
+                requestDTO.clothesType(),
+                requestDTO.seasonType()
+        );
+        if (isDuplicateName) {
+            throw new IllegalArgumentException("중복된 이름의 옷입니다.");
+        }
     }
 
 }

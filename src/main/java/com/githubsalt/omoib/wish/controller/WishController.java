@@ -35,10 +35,12 @@ public class WishController {
         description = "위시에 새로운 옷을 등록합니다.")
     @PostMapping
     public ResponseEntity<Void> registerClothes(
+            HttpServletRequest httpServletRequest,
         @RequestPart RegisterClothesRequestDTO requestDTO,
         @RequestPart MultipartFile image
     ) {
-        clothesService.registerClothes(requestDTO, image, clothesStorageType);
+        Long userId = jwtProvider.getUserId(httpServletRequest);
+        clothesService.registerClothes(requestDTO, image, clothesStorageType, userId);
         return ResponseEntity.ok().build();
     }
 
