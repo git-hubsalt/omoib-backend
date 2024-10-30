@@ -19,7 +19,8 @@ public class PresignedURLBuilder {
 
     public PresignedURLBuilder(@Value("${cloud.aws.credentials.access-key}") String accessKey,
                                @Value("${cloud.aws.credentials.secret-key}") String secretKey,
-                               @Value("${cloud.aws.s3.bucket.name}") String bucketName, AmazonS3 amazonS3) {
+                               @Value("${cloud.aws.s3.bucket.name}") String bucketName,
+                               AmazonS3 amazonS3) {
         this.accessKey = accessKey;
         this.secretKey = secretKey;
         this.bucketName = bucketName;

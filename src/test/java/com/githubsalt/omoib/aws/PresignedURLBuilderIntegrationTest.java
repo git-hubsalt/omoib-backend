@@ -1,19 +1,18 @@
 package com.githubsalt.omoib.aws;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.githubsalt.omoib.aws.s3.PresignedURLBuilder;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 public class PresignedURLBuilderIntegrationTest {
@@ -42,7 +41,7 @@ public class PresignedURLBuilderIntegrationTest {
                 .build();
 
         // PresignedURLBuilder 인스턴스 생성
-        presignedURLBuilder = new PresignedURLBuilder(accessKey, secretKey, bucketName);
+        presignedURLBuilder = new PresignedURLBuilder(accessKey, secretKey, bucketName, s3Client);
     }
 
     @Test
