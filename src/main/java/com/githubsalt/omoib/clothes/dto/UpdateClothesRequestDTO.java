@@ -1,6 +1,5 @@
 package com.githubsalt.omoib.clothes.dto;
 
-import com.githubsalt.omoib.clothes.enums.ClothesType;
 import com.githubsalt.omoib.clothes.enums.SeasonType;
 import java.util.List;
 
@@ -13,6 +12,6 @@ import java.util.List;
 public record UpdateClothesRequestDTO(
     String name,
     List<SeasonType> seasonType,
-    ClothesType clothesType
+    String clothesType
 ) {
 }

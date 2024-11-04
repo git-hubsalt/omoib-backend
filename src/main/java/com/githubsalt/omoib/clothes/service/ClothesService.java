@@ -80,7 +80,7 @@ public class ClothesService {
             Clothes clothes = clothesRepository.save(
                     Clothes.builder()
                             .name(clothesDTO.name())
-                            .clothesType(clothesDTO.clothesType())
+                            .clothesType(ClothesType.fromDescription(clothesDTO.clothesType()))
                             .seasonType(clothesDTO.seasonType())
                             .clothesStorageType(clothesStorageType)
                             .build()

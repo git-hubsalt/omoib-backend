@@ -85,7 +85,7 @@ public class Clothes {
 
     public void update(UpdateClothesRequestDTO requestDTO) {
         this.name = requestDTO.name();
-        this.clothesType = requestDTO.clothesType();
+        this.clothesType = ClothesType.fromDescription(requestDTO.clothesType());
         this.seasonType = requestDTO.seasonType();
     }
 
