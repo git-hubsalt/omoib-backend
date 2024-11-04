@@ -29,9 +29,9 @@ public class UserService {
     @Transactional
     public void signup(Long userId, SignupRequestDTO requestDTO, MultipartFile image) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("user not found"));
+                .orElseThrow(() -> new IllegalArgumentException("user not found"));
 
-        String imagePath = uploadImageIfPresent(userId, image);
+        String imagePath = uploadImageIfPresent(userId, image, "row");
 
         user.updateUser(requestDTO.username(), imagePath, null);
     }
@@ -57,22 +57,22 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("user not found"));
 
-        String rowImagePath = uploadImageIfPresent(userId, rowImage);
-        String profileImagePath = uploadImageIfPresent(userId, profileImage);
+        String rowImagePath = uploadImageIfPresent(userId, rowImage, "row");
+        String profileImagePath = uploadImageIfPresent(userId, profileImage, "profile");
 
         user.updateUser(requestDTO.name(), rowImagePath, profileImagePath);
     }
 
-    private String uploadImageIfPresent(Long userId, MultipartFile image) {
+    private String uploadImageIfPresent(Long userId, MultipartFile image, String category) {
         if (image == null) {
             return null;
         }
-        String s3Key = generateImageS3Key(userId);
+        String s3Key = generateImageS3Key(userId, category);
         return amazonS3Service.upload(image, s3Key);
     }
 
-    private String generateImageS3Key(Long userId) {
+    private String generateImageS3Key(Long userId, String category) {
         String name = aesEncryptionUtil.encrypt(userId.toString());
-        return String.format("users/%s/items/row/%s", userId, name);
+        return "users/" + userId + "/items/" + category + name;
     }
 }
