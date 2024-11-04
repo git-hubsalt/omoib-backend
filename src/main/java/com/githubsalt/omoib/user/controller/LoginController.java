@@ -2,12 +2,20 @@ package com.githubsalt.omoib.user.controller;
 
 import com.githubsalt.omoib.closet.dto.SignupRequestDTO;
 import com.githubsalt.omoib.global.config.security.JwtProvider;
+import com.githubsalt.omoib.user.dto.GetMypageResponseDTO;
+import com.githubsalt.omoib.user.dto.UpdateMypageResponseDTO;
 import com.githubsalt.omoib.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -35,6 +43,30 @@ public class LoginController {
     ) {
         Long userId = jwtProvider.getUserId(httpServletRequest);
         userService.signup(userId, requestDTO, image);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "마이페이지 조회",
+            description = "마이페이지를 조회합니다.")
+    @GetMapping("/mypage")
+    public ResponseEntity<GetMypageResponseDTO> getMypage(
+            HttpServletRequest httpServletRequest
+    ) {
+        Long userId = jwtProvider.getUserId(httpServletRequest);
+        return ResponseEntity.ok(userService.getMypage(userId));
+    }
+
+    @Operation(summary = "마이페이지 수정",
+            description = "마이페이지를 수정합니다.")
+    @PutMapping("/mypage")
+    public ResponseEntity<GetMypageResponseDTO> updateMypage(
+            HttpServletRequest httpServletRequest,
+            @RequestPart UpdateMypageResponseDTO requestDTO,
+            @RequestPart MultipartFile rowImage,
+            @RequestPart MultipartFile profileImage
+    ) {
+        Long userId = jwtProvider.getUserId(httpServletRequest);
+        userService.updateMypage(userId, requestDTO, rowImage, profileImage);
         return ResponseEntity.ok().build();
     }
 
