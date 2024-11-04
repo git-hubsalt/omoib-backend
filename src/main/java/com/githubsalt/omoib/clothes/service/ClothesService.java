@@ -72,17 +72,19 @@ public class ClothesService {
         ClothesStorageType clothesStorageType,
         Long userId
     ) {
-        checkDuplicateClothesName(requestDTO);
-        Clothes clothes = clothesRepository.save(
-            Clothes.builder()
-                .name(requestDTO.name())
-                .clothesType(requestDTO.clothesType())
-                .seasonType(requestDTO.seasonType())
-                .clothesStorageType(clothesStorageType)
-                .build()
-        );
-        String imagePath = uploadS3Image(image, clothes.getId(), clothesStorageType, userId);
-        clothes.updateImage(imagePath);
+        for (RegisterClothesRequestDTO.RegisterClothesDTO clothesDTO : requestDTO.clothes()) {
+            checkDuplicateClothesName(requestDTO);
+            Clothes clothes = clothesRepository.save(
+                    Clothes.builder()
+                            .name(clothesDTO.name())
+                            .clothesType(clothesDTO.clothesType())
+                            .seasonType(clothesDTO.seasonType())
+                            .clothesStorageType(clothesStorageType)
+                            .build()
+            );
+            String imagePath = uploadS3Image(image, clothes.getId(), clothesStorageType, userId);
+            clothes.updateImage(imagePath);
+        }
         //TODO 벡터 lambda
     }
 
