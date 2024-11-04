@@ -7,6 +7,7 @@ import com.githubsalt.omoib.clothes.dto.GetClothesResponseDTO;
 import com.githubsalt.omoib.clothes.dto.RegisterClothesRequestDTO;
 import com.githubsalt.omoib.clothes.dto.UpdateClothesRequestDTO;
 import com.githubsalt.omoib.clothes.enums.ClothesType;
+import com.githubsalt.omoib.clothes.enums.SeasonType;
 import com.githubsalt.omoib.clothes.repository.ClothesRepository;
 import com.githubsalt.omoib.global.enums.ClothesStorageType;
 import com.githubsalt.omoib.global.service.AmazonS3Service;
@@ -43,7 +44,9 @@ public class ClothesService {
         List<Clothes> clothes = clothesRepository.findAllByClothesStorageType(clothesStorageType);
         for (Clothes cloth : clothes) {
             ArrayList<String> tagList = new ArrayList<>();
-            tagList.add(cloth.getSeasonType().name());
+            for (SeasonType seasonType : cloth.getSeasonType()) {
+                tagList.add(seasonType.name());
+            }
             GetClothesResponseDTO.ClothesItemDTO clothesItemDTO = new GetClothesResponseDTO.ClothesItemDTO(
                 cloth.getId(),
                 cloth.getName(),
@@ -73,7 +76,7 @@ public class ClothesService {
         Long userId
     ) {
         for (RegisterClothesRequestDTO.RegisterClothesDTO clothesDTO : requestDTO.clothes()) {
-            checkDuplicateClothesName(requestDTO);
+            checkDuplicateClothesName(clothesDTO.name(), userId);
             Clothes clothes = clothesRepository.save(
                     Clothes.builder()
                             .name(clothesDTO.name())
@@ -150,12 +153,8 @@ public class ClothesService {
                 + name;
     }
 
-    private void checkDuplicateClothesName(RegisterClothesRequestDTO requestDTO) {
-        boolean isDuplicateName = clothesRepository.existsByNameAndClothesTypeAndSeasonType(
-                requestDTO.name(),
-                requestDTO.clothesType(),
-                requestDTO.seasonType()
-        );
+    private void checkDuplicateClothesName(String name, Long userId) {
+        boolean isDuplicateName = clothesRepository.existsByNameAndUserId(name, userId);
         if (isDuplicateName) {
             throw new IllegalArgumentException("중복된 이름의 옷입니다.");
         }

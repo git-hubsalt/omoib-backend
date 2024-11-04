@@ -12,7 +12,7 @@ public record RegisterClothesRequestDTO(
 ) {
     public record RegisterClothesDTO(
             String name,
-            SeasonType seasonType,
+            List<SeasonType> seasonType,
             ClothesType clothesType
     ) {
     }
