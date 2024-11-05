@@ -33,7 +33,7 @@ public class ClothesService {
     @Transactional(readOnly = true)
     public GetClothesResponseDTO getClothesList(Long userId) {
         GetClothesResponseDTO closet = getClothesList(ClothesStorageType.CLOSET, userId);
-        GetClothesResponseDTO wish = getClothesList(ClothesStorageType.WISH, userId);
+        GetClothesResponseDTO wish = getClothesList(ClothesStorageType.WISHLIST, userId);
 
         MergedResult result = mergeClothesDTOs(closet, wish);
 
