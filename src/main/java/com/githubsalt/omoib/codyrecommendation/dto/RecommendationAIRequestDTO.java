@@ -8,6 +8,7 @@ import java.util.List;
 
 public record RecommendationAIRequestDTO(Long userId,
                                          String timestamp,
+                                         List<BriefClothesDTO> requiredClothes,
                                          List<BriefClothesDTO> clothesList,
                                          List<HistoryClothesDTO> exclude) implements AWSLambdaInvocable {
 }

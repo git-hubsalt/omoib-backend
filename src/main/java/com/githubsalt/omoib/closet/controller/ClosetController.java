@@ -25,9 +25,10 @@ public class ClosetController {
     @Operation(summary = "옷장 조회",
         description = "옷장에 등록한 옷 목록을 옷 카테고리별로 분류하여 반환합니다.")
     @GetMapping
-    public ResponseEntity<GetClothesResponseDTO> getCloset() {
+    public ResponseEntity<GetClothesResponseDTO> getCloset(HttpServletRequest request) {
+        Long userId = jwtProvider.getUserId(request);
         return ResponseEntity.ok(
-            clothesService.getClothesList(clothesStorageType)
+            clothesService.getClothesList(clothesStorageType, userId)
         );
     }
 
