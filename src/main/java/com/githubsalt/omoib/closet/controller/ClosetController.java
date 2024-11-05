@@ -8,6 +8,7 @@ import com.githubsalt.omoib.global.config.security.JwtProvider;
 import com.githubsalt.omoib.global.enums.ClothesStorageType;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -45,7 +46,7 @@ public class ClosetController {
     public ResponseEntity<Void> registerClothes(
             HttpServletRequest httpServletRequest,
         @RequestPart RegisterClothesRequestDTO requestDTO,
-        @RequestPart MultipartFile image
+        @RequestPart List<MultipartFile> image
     ) {
         Long userId = jwtProvider.getUserId(httpServletRequest);
         clothesService.registerClothes(requestDTO, image, clothesStorageType, userId);

@@ -5,6 +5,7 @@ import com.githubsalt.omoib.clothes.domain.Clothes;
 import com.githubsalt.omoib.clothes.dto.BriefClothesDTO;
 import com.githubsalt.omoib.clothes.dto.GetClothesResponseDTO;
 import com.githubsalt.omoib.clothes.dto.RegisterClothesRequestDTO;
+import com.githubsalt.omoib.clothes.dto.RegisterClothesRequestDTO.RegisterClothesDTO;
 import com.githubsalt.omoib.clothes.dto.UpdateClothesRequestDTO;
 import com.githubsalt.omoib.clothes.enums.ClothesType;
 import com.githubsalt.omoib.clothes.enums.SeasonType;
@@ -81,11 +82,14 @@ public class ClothesService {
     @Transactional
     public void registerClothes(
         RegisterClothesRequestDTO requestDTO,
-        MultipartFile image,
+        List<MultipartFile> files,
         ClothesStorageType clothesStorageType,
         Long userId
     ) {
-        for (RegisterClothesRequestDTO.RegisterClothesDTO clothesDTO : requestDTO.clothes()) {
+        for (int idx = 0; idx < requestDTO.clothes().size(); idx++) {
+            RegisterClothesDTO clothesDTO = requestDTO.clothes().get(idx);
+            MultipartFile file = files.get(idx);
+
             checkDuplicateClothesName(clothesDTO.name(), userId);
             Clothes clothes = clothesRepository.save(
                     Clothes.builder()
@@ -95,7 +99,7 @@ public class ClothesService {
                             .clothesStorageType(clothesStorageType)
                             .build()
             );
-            String imagePath = uploadS3Image(image, clothes.getId(), clothesStorageType, userId);
+            String imagePath = uploadS3Image(file, clothes.getId(), clothesStorageType, userId);
             clothes.updateImage(imagePath);
         }
         //TODO 벡터 lambda

@@ -8,9 +8,17 @@ import com.githubsalt.omoib.global.config.security.JwtProvider;
 import com.githubsalt.omoib.global.enums.ClothesStorageType;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -38,7 +46,7 @@ public class WishController {
     public ResponseEntity<Void> registerClothes(
             HttpServletRequest httpServletRequest,
         @RequestPart RegisterClothesRequestDTO requestDTO,
-        @RequestPart MultipartFile image
+        @RequestPart List<MultipartFile> image
     ) {
         Long userId = jwtProvider.getUserId(httpServletRequest);
         clothesService.registerClothes(requestDTO, image, clothesStorageType, userId);
