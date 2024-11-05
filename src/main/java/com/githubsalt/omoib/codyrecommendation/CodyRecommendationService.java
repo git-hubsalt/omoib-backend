@@ -29,13 +29,13 @@ public class CodyRecommendationService {
     private final HistoryService historyService;
     private final LambdaService lambdaService;
 
-    public void recommend(RecommendationRequestDTO requestDTO) {
+    public void recommend(Long userId, RecommendationRequestDTO requestDTO) {
 
-        if (historyService.hasPendingHistory(requestDTO.userId())) {
+        if (historyService.hasPendingHistory(userId)) {
             throw new IllegalStateException("이미 추천 요청이 진행 중입니다.");
         }
 
-        String timestamp = historyService.createPendingHistory(requestDTO.userId(), HistoryType.RECOMMENDATION);
+        String timestamp = historyService.createPendingHistory(userId, HistoryType.RECOMMENDATION);
 
         GetClothesResponseDTO clothesResponseDTO = clothesService.getClothesList(requestDTO.storageType());
 
@@ -50,14 +50,14 @@ public class CodyRecommendationService {
             briefClothesList.add(clothesService.getBriefClothes(clothesItemDTO.id()));
         }
 
-        List<HistoryClothesDTO> exclude = historyService.getHistoryClothes(requestDTO.userId(), HistoryType.RECOMMENDATION);
+        List<HistoryClothesDTO> exclude = historyService.getHistoryClothes(userId, HistoryType.RECOMMENDATION);
 
         RecommendationAIRequestDTO aiModelRequestDTO = new RecommendationAIRequestDTO(
-                requestDTO.userId(),
+                userId,
                 timestamp,
                 briefClothesList, exclude);
 
-        lambdaService.invokeLambdaAsync("the-lambda-name-which-is-not-created-yet", aiModelRequestDTO); // todo: lambda function name
+        lambdaService.invokeLambdaAsync("the-lambda-name-which-is-not-created-yet   ", aiModelRequestDTO); // todo: lambda function name
     }
 
     public void response(SqsRecommendResponseMessageDTO message) {
