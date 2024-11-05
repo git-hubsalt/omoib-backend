@@ -24,17 +24,23 @@ public class User {
     @Column(name = "row_image_path")
     private String rowImagePath;
 
+    @Column(name = "profile_image_path")
+    private String profileImagePath;
+
     @Builder
     public User(String socialId) {
         this.socialId = socialId;
     }
 
-    public void updateUser(String name, String rowImagePath) {
+    public void updateUser(String name, String rowImagePath, String profileImagePath) {
         if (name != null) {
             this.name = name;
         }
         if (rowImagePath != null) {
             this.rowImagePath = rowImagePath;
+        }
+        if (profileImagePath != null) {
+            this.profileImagePath = profileImagePath;
         }
     }
 }

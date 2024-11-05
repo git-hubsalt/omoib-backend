@@ -8,16 +8,24 @@ import com.githubsalt.omoib.clothes.enums.SeasonType;
 import com.githubsalt.omoib.global.enums.ClothesStorageType;
 import com.githubsalt.omoib.history.History;
 import com.githubsalt.omoib.user.domain.User;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "clothes")
@@ -37,9 +45,9 @@ public class Clothes {
 
     @Convert(converter = SeasonTypeConverter.class)
     @Column(name = "season_type", nullable = false)
-    private SeasonType seasonType;      //계절
+    private List<SeasonType> seasonType;      //계절
 
-    @Column(name = "image_path", nullable = false)
+    @Column(name = "image_path")
     private String imagePath; // S3 Presigned URL
 
     @Column(name = "clothes_storage_type", nullable = false)
@@ -64,7 +72,7 @@ public class Clothes {
     public Clothes(
         String name,
         ClothesType clothesType,
-        SeasonType seasonType,
+        List<SeasonType> seasonType,
         String imagePath,
         ClothesStorageType clothesStorageType
     ) {
@@ -77,7 +85,7 @@ public class Clothes {
 
     public void update(UpdateClothesRequestDTO requestDTO) {
         this.name = requestDTO.name();
-        this.clothesType = requestDTO.clothesType();
+        this.clothesType = ClothesType.fromDescription(requestDTO.clothesType());
         this.seasonType = requestDTO.seasonType();
     }
 

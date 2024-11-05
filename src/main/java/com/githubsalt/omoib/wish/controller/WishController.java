@@ -20,7 +20,7 @@ public class WishController {
 
     private final ClothesService clothesService;
     private final JwtProvider jwtProvider;
-    private final ClothesStorageType clothesStorageType = ClothesStorageType.WISH;
+    private final ClothesStorageType clothesStorageType = ClothesStorageType.WISHLIST;
 
     @Operation(summary = "위시 조회",
         description = "위시에 등록한 옷 목록을 옷 카테고리별로 분류하여 반환합니다.")
@@ -36,10 +36,12 @@ public class WishController {
         description = "위시에 새로운 옷을 등록합니다.")
     @PostMapping
     public ResponseEntity<Void> registerClothes(
+            HttpServletRequest httpServletRequest,
         @RequestPart RegisterClothesRequestDTO requestDTO,
         @RequestPart MultipartFile image
     ) {
-        clothesService.registerClothes(requestDTO, image, clothesStorageType);
+        Long userId = jwtProvider.getUserId(httpServletRequest);
+        clothesService.registerClothes(requestDTO, image, clothesStorageType, userId);
         return ResponseEntity.ok().build();
     }
 

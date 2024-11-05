@@ -1,7 +1,7 @@
 package com.githubsalt.omoib.clothes.dto;
 
-import com.githubsalt.omoib.clothes.enums.ClothesType;
 import com.githubsalt.omoib.clothes.enums.SeasonType;
+import java.util.List;
 
 /**
  * 옷장에 옷 수정하기
@@ -11,7 +11,7 @@ import com.githubsalt.omoib.clothes.enums.SeasonType;
  */
 public record UpdateClothesRequestDTO(
     String name,
-    SeasonType seasonType,
-    ClothesType clothesType
+    List<SeasonType> seasonType,
+    String clothesType
 ) {
 }
