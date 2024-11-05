@@ -11,6 +11,9 @@ import org.springframework.stereotype.Repository;
 public interface ClothesRepository extends JpaRepository<Clothes, Long> {
 
     Optional<Clothes> findByIdAndUserId(Long clothesId, Long userId);
-    List<Clothes> findAllByClothesStorageType(ClothesStorageType clothesStorageType);
+
+    List<Clothes> findAllByUserId(Long userId);
+
+    List<Clothes> findAllByClothesStorageTypeAndUserId(ClothesStorageType clothesStorageType, Long userId);
     boolean existsByNameAndUserId(String name, Long userId);
 }

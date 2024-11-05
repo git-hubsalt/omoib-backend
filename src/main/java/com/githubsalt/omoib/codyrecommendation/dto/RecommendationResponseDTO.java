@@ -1,8 +1,8 @@
 package com.githubsalt.omoib.codyrecommendation.dto;
 
-import jakarta.validation.constraints.NotNull;
+import com.githubsalt.omoib.clothes.dto.GetClothesResponseDTO;
 
 import java.util.List;
 
-public record RecommendationResponseDTO(@NotNull Long userId, List<Long> clothesIdList) {
+public record RecommendationResponseDTO(List<GetClothesResponseDTO.ClothesItemDTO> clothesList) {
 }

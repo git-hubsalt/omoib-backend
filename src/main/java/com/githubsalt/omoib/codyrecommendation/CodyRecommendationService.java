@@ -29,35 +29,44 @@ public class CodyRecommendationService {
     private final HistoryService historyService;
     private final LambdaService lambdaService;
 
-    public void recommend(RecommendationRequestDTO requestDTO) {
+    public void recommend(Long userId, RecommendationRequestDTO requestDTO) {
 
-        if (historyService.hasPendingHistory(requestDTO.userId())) {
+        if (historyService.hasPendingHistory(userId)) {
             throw new IllegalStateException("이미 추천 요청이 진행 중입니다.");
         }
 
-        String timestamp = historyService.createPendingHistory(requestDTO.userId(), HistoryType.RECOMMENDATION);
-
-        GetClothesResponseDTO clothesResponseDTO = clothesService.getClothesList(requestDTO.storageType());
+        String timestamp = historyService.createPendingHistory(userId, HistoryType.RECOMMENDATION);
 
         // Issue #8: 추천 모델의 경우의 수 과다 문제로 추천 모델에 들어가는 옷의 종류를 제한함.
+
+        GetClothesResponseDTO clothesResponseDTO = clothesService.getClothesList(userId);
+
         List<GetClothesResponseDTO.ClothesItemDTO> allClothesItems = new ArrayList<>();
         allClothesItems.addAll(clothesResponseDTO.upper());
         allClothesItems.addAll(clothesResponseDTO.lower());
         allClothesItems.addAll(clothesResponseDTO.overall());
 
-        List<BriefClothesDTO> briefClothesList = new ArrayList<>();
+        List<BriefClothesDTO> briefRequiredClothesList = new ArrayList<>();
+        List<BriefClothesDTO> briefCandidateClothesList = new ArrayList<>();
         for (GetClothesResponseDTO.ClothesItemDTO clothesItemDTO : allClothesItems) {
-            briefClothesList.add(clothesService.getBriefClothes(clothesItemDTO.id()));
+            // 필수 옷 처리
+            if (requestDTO.requiredClothes().contains(clothesItemDTO.id())) {
+                briefRequiredClothesList.add(clothesService.getBriefClothes(clothesItemDTO.id()));
+            } else {
+                briefCandidateClothesList.add(clothesService.getBriefClothes(clothesItemDTO.id()));
+            }
         }
 
-        List<HistoryClothesDTO> exclude = historyService.getHistoryClothes(requestDTO.userId(), HistoryType.RECOMMENDATION);
+
+        List<HistoryClothesDTO> exclude = historyService.getHistoryClothes(userId, HistoryType.RECOMMENDATION);
 
         RecommendationAIRequestDTO aiModelRequestDTO = new RecommendationAIRequestDTO(
-                requestDTO.userId(),
+                userId,
                 timestamp,
-                briefClothesList, exclude);
+                briefRequiredClothesList,
+                briefCandidateClothesList, exclude);
 
-        lambdaService.invokeLambdaAsync("the-lambda-name-which-is-not-created-yet", aiModelRequestDTO); // todo: lambda function name
+        lambdaService.invokeLambdaAsync("the-lambda-name-which-is-not-created-yet   ", aiModelRequestDTO); // todo: lambda function name
     }
 
     public void response(SqsRecommendResponseMessageDTO message) {
