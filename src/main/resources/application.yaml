@@ -56,3 +56,12 @@ login:
 aes:
   encryption:
     secret-key: ${aes.secret-key}
+
+cloud:
+  aws:
+    s3:
+      bucket:
+        name: githubsalt-bucket
+    credentials:
+      access-key: ${aws.access_key_id}
+      secret-key : ${aws.secret_access_key}
