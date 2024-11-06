@@ -48,8 +48,8 @@ spring:
       region:
         static: ap-northeast-2
       credentials:
-        access-key: ${aws.access_key_id}
-        secret-key: ${aws.secret_access_key}
+        access-key: ${aws.access-key-id}
+        secret-key: ${aws.secret-access-key}
 
 jwt:
   token:
@@ -63,7 +63,7 @@ login:
 
 aes:
   encryption:
-    secret-key: ${aws.access_key_id}
+    secret-key: ${aws.access-key-id}
 
 cloud:
   aws:
@@ -71,5 +71,5 @@ cloud:
       bucket:
         name: githubsalt-bucket
     credentials:
-      access-key: ${aws.access_key_id}
-      secret-key: ${aws.secret_access_key}
+      access-key: ${aws.access-key-id}
+      secret-key: ${aws.secret-access-key}
