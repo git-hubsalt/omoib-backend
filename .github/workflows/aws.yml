@@ -103,3 +103,5 @@ jobs:
         service: ${{ env.ECS_SERVICE }}
         cluster: ${{ env.ECS_CLUSTER }}
         wait-for-service-stability: true
+      env:
+        SPRING_PROFILES_ACTIVE: prod
