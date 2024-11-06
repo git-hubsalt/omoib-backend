@@ -43,14 +43,6 @@ spring:
       hibernate:
         default_batch_fetch_size: 1000
 
-  cloud:
-    aws:
-      region:
-        static: ap-northeast-2
-      credentials:
-        access-key: ${aws.access-key-id}
-        secret-key: ${aws.secret-access-key}
-
 jwt:
   token:
     secret-key: ${jwt.secret-key}
