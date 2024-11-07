@@ -21,10 +21,10 @@ public class User {
     @Column(name = "social_id")
     private String socialId;
 
-    @Column(name = "row_image_path")
+    @Column(name = "row_image_path", columnDefinition = "TEXT")
     private String rowImagePath;
 
-    @Column(name = "profile_image_path")
+    @Column(name = "profile_image_path", columnDefinition = "TEXT")
     private String profileImagePath;
 
     @Builder

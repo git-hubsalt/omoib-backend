@@ -62,8 +62,8 @@ public class LoginController {
     public ResponseEntity<GetMypageResponseDTO> updateMypage(
             HttpServletRequest httpServletRequest,
             @RequestPart UpdateMypageResponseDTO requestDTO,
-            @RequestPart MultipartFile rowImage,
-            @RequestPart MultipartFile profileImage
+            @RequestPart(required = false) MultipartFile rowImage,
+            @RequestPart(required = false) MultipartFile profileImage
     ) {
         Long userId = jwtProvider.getUserId(httpServletRequest);
         userService.updateMypage(userId, requestDTO, rowImage, profileImage);

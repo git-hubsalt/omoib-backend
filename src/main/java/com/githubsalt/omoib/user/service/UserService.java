@@ -2,17 +2,15 @@ package com.githubsalt.omoib.user.service;
 
 import com.githubsalt.omoib.closet.dto.SignupRequestDTO;
 import com.githubsalt.omoib.global.service.AmazonS3Service;
-import com.githubsalt.omoib.global.util.AesEncryptionUtil;
 import com.githubsalt.omoib.user.domain.User;
 import com.githubsalt.omoib.user.dto.GetMypageResponseDTO;
 import com.githubsalt.omoib.user.dto.UpdateMypageResponseDTO;
 import com.githubsalt.omoib.user.repository.UserRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +18,6 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final AmazonS3Service amazonS3Service;
-    private final AesEncryptionUtil aesEncryptionUtil;
 
     public Optional<User> findUser(Long userId) {
         return userRepository.findById(userId);
@@ -31,7 +28,7 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("user not found"));
 
-        String imagePath = uploadImageIfPresent(userId, image, "row");
+        String imagePath = amazonS3Service.uploadRow(image, userId);
 
         user.updateUser(requestDTO.username(), imagePath, null);
     }
@@ -42,7 +39,7 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("user not found"));
         return GetMypageResponseDTO.builder()
                 .name(user.getName())
-                .email(user.getSocialId())
+                .email("dlwjddnr0213@gmail.com")
                 .rowImagePath(user.getRowImagePath())
                 .profileImagePath(user.getProfileImagePath())
                 .build();
@@ -57,22 +54,14 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("user not found"));
 
-        String rowImagePath = uploadImageIfPresent(userId, rowImage, "row");
-        String profileImagePath = uploadImageIfPresent(userId, profileImage, "profile");
-
-        user.updateUser(requestDTO.name(), rowImagePath, profileImagePath);
-    }
-
-    private String uploadImageIfPresent(Long userId, MultipartFile image, String category) {
-        if (image == null) {
-            return null;
+        String rowImagePath = null;
+        String profileImagePath = null;
+        if (rowImage != null) {
+            rowImagePath = amazonS3Service.uploadRow(rowImage, userId);
         }
-        String s3Key = generateImageS3Key(userId, category);
-        return amazonS3Service.upload(image, s3Key);
-    }
-
-    private String generateImageS3Key(Long userId, String category) {
-        String name = aesEncryptionUtil.encrypt(userId.toString());
-        return "users/" + userId + "/items/" + category + name;
+        if (profileImage != null) {
+            profileImagePath = amazonS3Service.uploadProfile(profileImage, userId);
+        }
+        user.updateUser(requestDTO.name(), rowImagePath, profileImagePath);
     }
 }

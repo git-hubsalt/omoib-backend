@@ -30,7 +30,7 @@ public class PresignedURLBuilder {
 
     public URL buildPresignedURL(String filePath) {
         GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, filePath)
-                .withMethod(com.amazonaws.HttpMethod.GET)
+                .withMethod(com.amazonaws.HttpMethod.PUT)
                 .withExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 1)); // 1 min
         log.info("Generating Presigned URL for: {}", filePath);
 
