@@ -35,9 +35,7 @@ public class WishController {
     @GetMapping
     public ResponseEntity<GetClothesResponseDTO> getCloset(HttpServletRequest request) {
         Long userId = jwtProvider.getUserId(request);
-        return ResponseEntity.ok(
-            clothesService.getClothesList(clothesStorageType, userId)
-        );
+        return ResponseEntity.ok(clothesService.getAllClothes(userId));
     }
 
     @Operation(summary = "위시에 옷 등록 (옷 정보, 옷 이미지)",

@@ -3,6 +3,7 @@ package com.githubsalt.omoib.clothes.service;
 import com.githubsalt.omoib.aws.s3.PresignedURLBuilder;
 import com.githubsalt.omoib.clothes.domain.Clothes;
 import com.githubsalt.omoib.clothes.dto.BriefClothesDTO;
+import com.githubsalt.omoib.clothes.dto.ClothesResponseDTO;
 import com.githubsalt.omoib.clothes.dto.GetClothesResponseDTO;
 import com.githubsalt.omoib.clothes.dto.RegisterClothesRequestDTO;
 import com.githubsalt.omoib.clothes.dto.RegisterClothesRequestDTO.RegisterClothesDTO;
@@ -32,18 +33,39 @@ public class ClothesService {
     private final AesEncryptionUtil aesEncryptionUtil;
 
     @Transactional(readOnly = true)
-    public GetClothesResponseDTO getClothesList(Long userId) {
-        GetClothesResponseDTO closet = getClothesList(ClothesStorageType.CLOSET, userId);
-        GetClothesResponseDTO wish = getClothesList(ClothesStorageType.WISHLIST, userId);
-
-        MergedResult result = mergeClothesDTOs(closet, wish);
-
-        return new GetClothesResponseDTO(result.upper(), result.lower(), result.shoes(), result.bag(), result.cap(), result.outer(), result.overall());
+    public GetClothesResponseDTO getAllClothes(Long userId) {
+        ArrayList<GetClothesResponseDTO.ClothesItemDTO> clothesDtos = new ArrayList<>();
+        List<Clothes> clothes = clothesRepository.findAllByUserId(userId);
+        for (Clothes cloth : clothes) {
+            ArrayList<String> tagList = new ArrayList<>();
+            for (SeasonType seasonType : cloth.getSeasonType()) {
+                tagList.add(seasonType.name());
+            }
+            GetClothesResponseDTO.ClothesItemDTO clothesItemDTO = new GetClothesResponseDTO.ClothesItemDTO(
+                    cloth.getId(),
+                    cloth.getName(),
+                    cloth.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")),
+                    tagList,
+                    cloth.getImagePath()
+            );
+            clothesDtos.add(clothesItemDTO);
+        }
+        return new GetClothesResponseDTO(clothesDtos);
     }
 
     @Transactional(readOnly = true)
-    public GetClothesResponseDTO getClothesList(ClothesStorageType storageType, Long userId) {
-        Map<ClothesType, ArrayList<GetClothesResponseDTO.ClothesItemDTO>> typeArrayListMap = Map.of(
+    public ClothesResponseDTO getClothesList(Long userId) {
+        ClothesResponseDTO closet = getClothesList(ClothesStorageType.CLOSET, userId);
+        ClothesResponseDTO wish = getClothesList(ClothesStorageType.WISHLIST, userId);
+
+        MergedResult result = mergeClothesDTOs(closet, wish);
+
+        return new ClothesResponseDTO(result.upper(), result.lower(), result.shoes(), result.bag(), result.cap(), result.outer(), result.overall());
+    }
+
+    @Transactional(readOnly = true)
+    public ClothesResponseDTO getClothesList(ClothesStorageType storageType, Long userId) {
+        Map<ClothesType, ArrayList<ClothesResponseDTO.ClothesItemDTO>> typeArrayListMap = Map.of(
                 ClothesType.upper, new ArrayList<>(),
                 ClothesType.lower, new ArrayList<>(),
                 ClothesType.shoes, new ArrayList<>(),
@@ -58,7 +80,7 @@ public class ClothesService {
             for (SeasonType seasonType : cloth.getSeasonType()) {
                 tagList.add(seasonType.name());
             }
-            GetClothesResponseDTO.ClothesItemDTO clothesItemDTO = new GetClothesResponseDTO.ClothesItemDTO(
+            ClothesResponseDTO.ClothesItemDTO clothesItemDTO = new ClothesResponseDTO.ClothesItemDTO(
                     cloth.getId(),
                     cloth.getName(),
                     cloth.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")),
@@ -68,7 +90,7 @@ public class ClothesService {
 
             typeArrayListMap.get(cloth.getClothesType()).add(clothesItemDTO);
         }
-        return new GetClothesResponseDTO(
+        return new ClothesResponseDTO(
                 typeArrayListMap.get(ClothesType.upper),
                 typeArrayListMap.get(ClothesType.lower),
                 typeArrayListMap.get(ClothesType.shoes),
@@ -143,38 +165,38 @@ public class ClothesService {
         );
     }
 
-    private static MergedResult mergeClothesDTOs(GetClothesResponseDTO closet, GetClothesResponseDTO wish) {
-        List<GetClothesResponseDTO.ClothesItemDTO> upper = new ArrayList<>(closet.upper());
+    private static MergedResult mergeClothesDTOs(ClothesResponseDTO closet, ClothesResponseDTO wish) {
+        List<ClothesResponseDTO.ClothesItemDTO> upper = new ArrayList<>(closet.upper());
         upper.addAll(wish.upper());
 
-        List<GetClothesResponseDTO.ClothesItemDTO> lower = new ArrayList<>(closet.lower());
+        List<ClothesResponseDTO.ClothesItemDTO> lower = new ArrayList<>(closet.lower());
         lower.addAll(wish.lower());
 
-        List<GetClothesResponseDTO.ClothesItemDTO> shoes = new ArrayList<>(closet.shoes());
+        List<ClothesResponseDTO.ClothesItemDTO> shoes = new ArrayList<>(closet.shoes());
         shoes.addAll(wish.shoes());
 
-        List<GetClothesResponseDTO.ClothesItemDTO> bag = new ArrayList<>(closet.bag());
+        List<ClothesResponseDTO.ClothesItemDTO> bag = new ArrayList<>(closet.bag());
         bag.addAll(wish.bag());
 
-        List<GetClothesResponseDTO.ClothesItemDTO> cap = new ArrayList<>(closet.cap());
+        List<ClothesResponseDTO.ClothesItemDTO> cap = new ArrayList<>(closet.cap());
         cap.addAll(wish.cap());
 
-        List<GetClothesResponseDTO.ClothesItemDTO> outer = new ArrayList<>(closet.outer());
+        List<ClothesResponseDTO.ClothesItemDTO> outer = new ArrayList<>(closet.outer());
         outer.addAll(wish.outer());
 
-        List<GetClothesResponseDTO.ClothesItemDTO> overall = new ArrayList<>(closet.overall());
+        List<ClothesResponseDTO.ClothesItemDTO> overall = new ArrayList<>(closet.overall());
         overall.addAll(wish.overall());
 
         return new MergedResult(upper, lower, shoes, bag, cap, outer, overall);
     }
 
-    private record MergedResult(List<GetClothesResponseDTO.ClothesItemDTO> upper,
-                                List<GetClothesResponseDTO.ClothesItemDTO> lower,
-                                List<GetClothesResponseDTO.ClothesItemDTO> shoes,
-                                List<GetClothesResponseDTO.ClothesItemDTO> bag,
-                                List<GetClothesResponseDTO.ClothesItemDTO> cap,
-                                List<GetClothesResponseDTO.ClothesItemDTO> outer,
-                                List<GetClothesResponseDTO.ClothesItemDTO> overall) {
+    private record MergedResult(List<ClothesResponseDTO.ClothesItemDTO> upper,
+                                List<ClothesResponseDTO.ClothesItemDTO> lower,
+                                List<ClothesResponseDTO.ClothesItemDTO> shoes,
+                                List<ClothesResponseDTO.ClothesItemDTO> bag,
+                                List<ClothesResponseDTO.ClothesItemDTO> cap,
+                                List<ClothesResponseDTO.ClothesItemDTO> outer,
+                                List<ClothesResponseDTO.ClothesItemDTO> overall) {
     }
 
     private String uploadS3Image(

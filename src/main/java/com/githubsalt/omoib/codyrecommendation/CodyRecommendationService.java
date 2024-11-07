@@ -4,7 +4,7 @@ import com.githubsalt.omoib.aws.lambda.LambdaService;
 import com.githubsalt.omoib.aws.sqs.dto.SqsRecommendResponseMessageDTO;
 import com.githubsalt.omoib.clothes.domain.Clothes;
 import com.githubsalt.omoib.clothes.dto.BriefClothesDTO;
-import com.githubsalt.omoib.clothes.dto.GetClothesResponseDTO;
+import com.githubsalt.omoib.clothes.dto.ClothesResponseDTO;
 import com.githubsalt.omoib.clothes.service.ClothesService;
 import com.githubsalt.omoib.codyrecommendation.dto.RecommendationAIRequestDTO;
 import com.githubsalt.omoib.codyrecommendation.dto.RecommendationRequestDTO;
@@ -39,16 +39,16 @@ public class CodyRecommendationService {
 
         // Issue #8: 추천 모델의 경우의 수 과다 문제로 추천 모델에 들어가는 옷의 종류를 제한함.
 
-        GetClothesResponseDTO clothesResponseDTO = clothesService.getClothesList(userId);
+        ClothesResponseDTO clothesResponseDTO = clothesService.getClothesList(userId);
 
-        List<GetClothesResponseDTO.ClothesItemDTO> allClothesItems = new ArrayList<>();
+        List<ClothesResponseDTO.ClothesItemDTO> allClothesItems = new ArrayList<>();
         allClothesItems.addAll(clothesResponseDTO.upper());
         allClothesItems.addAll(clothesResponseDTO.lower());
         allClothesItems.addAll(clothesResponseDTO.overall());
 
         List<BriefClothesDTO> briefRequiredClothesList = new ArrayList<>();
         List<BriefClothesDTO> briefCandidateClothesList = new ArrayList<>();
-        for (GetClothesResponseDTO.ClothesItemDTO clothesItemDTO : allClothesItems) {
+        for (ClothesResponseDTO.ClothesItemDTO clothesItemDTO : allClothesItems) {
             // 필수 옷 처리
             if (requestDTO.requiredClothes().contains(clothesItemDTO.id())) {
                 briefRequiredClothesList.add(clothesService.getBriefClothes(clothesItemDTO.id()));
