@@ -1,10 +1,13 @@
 package com.githubsalt.omoib.history;
 
+import com.githubsalt.omoib.history.dto.HistoryBriefListDTO;
+import com.githubsalt.omoib.history.dto.HistoryResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -15,18 +18,16 @@ public class HistoryController {
 
     private final HistoryService historyService;
 
-    // TODO: JWT 토큰을 이용한 사용자 인증 처리 구현
-
     /**
      * 특정 History 조회
      * @param historyId
      * @return
      */
     @GetMapping("/{historyId}")
-    public ResponseEntity<History> getHistory(@PathVariable Long historyId) {
-        History history;
+    public ResponseEntity<HistoryResponseDTO> getHistory(@PathVariable Long historyId) {
+        HistoryResponseDTO history;
         try {
-            history = historyService.findHistory(historyId);
+            history = HistoryResponseDTO.of(historyService.findHistory(historyId));
         } catch (IllegalArgumentException e) {
             log.error("History 조회 중 오류가 발생했습니다: ", e);
             return ResponseEntity.badRequest().build();
@@ -41,10 +42,13 @@ public class HistoryController {
      * @return
      */
     @GetMapping("/users/{userId}/histories")
-    public ResponseEntity<List<History>> getHistories(@PathVariable Long userId, @RequestParam(name = "historyType") HistoryType historyType) {
-        List<History> histories;
+    public ResponseEntity<List<HistoryBriefListDTO>> getHistories(@PathVariable Long userId, @RequestParam(name = "historyType") HistoryType historyType) {
+        List<HistoryBriefListDTO> histories = new ArrayList<>();
         try {
-            histories = historyService.findHistories(userId, historyType);
+            List<History> historyList = historyService.findHistories(userId, historyType);
+            for (History history : historyList) {
+                histories.add(HistoryBriefListDTO.of(history));
+            }
         } catch (IllegalArgumentException e) {
             log.error("History 조회 중 오류가 발생했습니다: ", e);
             return ResponseEntity.badRequest().build();

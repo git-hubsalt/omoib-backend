@@ -4,6 +4,7 @@ import com.githubsalt.omoib.clothes.domain.Clothes;
 import com.githubsalt.omoib.codyrecommendation.dto.RecommendationResultDTO;
 import com.githubsalt.omoib.history.dto.HistoryClothesDTO;
 import com.githubsalt.omoib.history.enums.HistoryStatus;
+import com.githubsalt.omoib.notification.NotifyStatus;
 import com.githubsalt.omoib.user.domain.User;
 import com.githubsalt.omoib.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +27,11 @@ public class HistoryService {
 
     /**
      * 사용자의 추천 기록을 생성합니다.
+     *
      * @param resultDTO
      * @return
      */
+    /*unused*/
     @Transactional
     public Long createHistory(RecommendationResultDTO resultDTO) {
         Long userId = resultDTO.userId();
@@ -43,6 +46,7 @@ public class HistoryService {
                 .user(user)
                 .clothesList(clothesList)
                 .status(HistoryStatus.COMPLETED)
+                .notifyStatus(NotifyStatus.NOT_YET)
                 .build();
         historyRepository.save(history);
 
@@ -50,8 +54,9 @@ public class HistoryService {
     }
 
     @Transactional
-    public String createPendingHistory(Long userId, HistoryType historyType) {
+    public String createPendingHistory(Long userId, HistoryType historyType, List<String> filterTagList) {
         User user = findUser(userId);
+        String tagString = String.join(",", filterTagList);
         // History 생성
         LocalDateTime now = LocalDateTime.now();
         History history = History.builder()
@@ -60,6 +65,8 @@ public class HistoryService {
                 .user(user)
                 .clothesList(null)
                 .status(HistoryStatus.PENDING)
+                .notifyStatus(NotifyStatus.NOT_YET)
+                .filterTagsString(tagString)
                 .build();
         historyRepository.save(history);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd-HHmmss");
@@ -69,14 +76,22 @@ public class HistoryService {
 
 
     /**
-     * 사용자의 추천 기록을 조회합니다.
+     * 사용자의 추천 기록을 조회합니다. 해당 작업은 조회 후 알림 상태를 읽음으로 변경합니다.
+     *
      * @param userId
      * @param historyType
      * @return
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public List<History> findHistories(Long userId, HistoryType historyType) {
-        return historyRepository.findByUserAndType(findUser(userId), historyType);
+        List<History> byUserAndType = historyRepository.findByUserAndType(findUser(userId), historyType);
+        for (History history : byUserAndType) {
+            if (history.getNotifyStatus().equals(NotifyStatus.NOT_YET)) {
+                history.setNotifyStatus(NotifyStatus.NOTIFIED);
+                historyRepository.save(history);
+            }
+        }
+        return byUserAndType;
     }
 
     @Transactional(readOnly = true)
@@ -85,17 +100,35 @@ public class HistoryService {
     }
 
     /**
-     * 특정 추천 기록을 조회합니다.
+     * 특정 추천 기록을 조회합니다. 해당 작업은 조회 후 알림 상태를 읽음으로 변경합니다.
+     *
      * @param historyId
      * @return
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public History findHistory(Long historyId) {
-        return historyRepository.findById(historyId).orElseThrow(() -> new IllegalArgumentException("추천 기록을 찾을 수 없습니다."));
+        History history = historyRepository.findById(historyId).orElseThrow(() -> new IllegalArgumentException("추천 기록을 찾을 수 없습니다."));
+        if (history.getNotifyStatus().equals(NotifyStatus.NOT_YET)) {
+            history.setNotifyStatus(NotifyStatus.NOTIFIED);
+            historyRepository.save(history);
+        }
+        return history;
+    }
+
+    /**
+     * 특정 사용자가 아직 알림받지 못한 추천 기록을 조회합니다.
+     *
+     * @param userId 사용자 ID
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<History> findUnNotifiedHistory(Long userId) {
+        return historyRepository.findAllByUserIdAndNotifyStatus(userId, NotifyStatus.NOT_YET);
     }
 
     /**
      * 특정 추천 기록을 삭제합니다.
+     *
      * @param historyId
      */
     @Transactional

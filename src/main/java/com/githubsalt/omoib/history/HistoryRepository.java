@@ -1,6 +1,7 @@
 package com.githubsalt.omoib.history;
 
 import com.githubsalt.omoib.history.enums.HistoryStatus;
+import com.githubsalt.omoib.notification.NotifyStatus;
 import com.githubsalt.omoib.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -14,4 +15,5 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
 
     boolean existsByUserIdAndStatus(Long userId, HistoryStatus historyStatus);
     Optional<History> findByUserIdAndStatus(Long userId, HistoryStatus historyStatus);
+    List<History> findAllByUserIdAndNotifyStatus(Long userId, NotifyStatus notifyStatus);
 }
