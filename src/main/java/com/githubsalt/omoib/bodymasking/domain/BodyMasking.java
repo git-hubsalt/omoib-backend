@@ -27,6 +27,7 @@ public class BodyMasking {
     @Convert(converter = MaskingTypeConverter.class)
     private MaskingType maskingType;
 
+    @Column(name = "image_path")
     private String imagePath; // S3 Presigned URL
 
     @CreationTimestamp

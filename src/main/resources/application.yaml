@@ -53,10 +53,6 @@ login:
   redirect:
     url: ${login.redirect-url}
 
-aes:
-  encryption:
-    secret-key: ${aws.access-key-id}
-
 cloud:
   aws:
     s3:

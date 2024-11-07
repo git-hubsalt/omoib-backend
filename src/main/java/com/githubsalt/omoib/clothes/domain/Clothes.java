@@ -6,6 +6,7 @@ import com.githubsalt.omoib.clothes.converter.SeasonTypeConverter;
 import com.githubsalt.omoib.clothes.dto.UpdateClothesRequestDTO;
 import com.githubsalt.omoib.clothes.enums.ClothesType;
 import com.githubsalt.omoib.clothes.enums.SeasonType;
+import com.githubsalt.omoib.global.converter.ClothesStorageTypeConverter;
 import com.githubsalt.omoib.global.enums.ClothesStorageType;
 import com.githubsalt.omoib.history.History;
 import com.githubsalt.omoib.user.domain.User;
@@ -48,9 +49,10 @@ public class Clothes {
     @Column(name = "season_type", nullable = false)
     private List<SeasonType> seasonType;      //계절
 
-    @Column(name = "image_path")
+    @Column(name = "image_path", columnDefinition = "TEXT")
     private String imagePath; // S3 Presigned URL
 
+    @Convert(converter = ClothesStorageTypeConverter.class)
     @Column(name = "clothes_storage_type", nullable = false)
     private ClothesStorageType clothesStorageType;
 
@@ -77,13 +79,15 @@ public class Clothes {
         ClothesType clothesType,
         List<SeasonType> seasonType,
         String imagePath,
-        ClothesStorageType clothesStorageType
+        ClothesStorageType clothesStorageType,
+        User user
     ) {
         this.name = name;
         this.clothesType = clothesType;
         this.seasonType = seasonType;
         this.imagePath = imagePath;
         this.clothesStorageType = clothesStorageType;
+        this.user = user;
     }
 
     public void update(UpdateClothesRequestDTO requestDTO) {

@@ -13,7 +13,8 @@ import com.githubsalt.omoib.clothes.enums.SeasonType;
 import com.githubsalt.omoib.clothes.repository.ClothesRepository;
 import com.githubsalt.omoib.global.enums.ClothesStorageType;
 import com.githubsalt.omoib.global.service.AmazonS3Service;
-import com.githubsalt.omoib.global.util.AesEncryptionUtil;
+import com.githubsalt.omoib.user.domain.User;
+import com.githubsalt.omoib.user.repository.UserRepository;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +29,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class ClothesService {
 
     private final ClothesRepository clothesRepository;
+    private final UserRepository userRepository;
     private final PresignedURLBuilder presignedURLBuilder;
     private final AmazonS3Service amazonS3Service;
-    private final AesEncryptionUtil aesEncryptionUtil;
 
     @Transactional(readOnly = true)
     public GetClothesResponseDTO getAllClothes(Long userId) {
@@ -108,6 +109,9 @@ public class ClothesService {
         ClothesStorageType clothesStorageType,
         Long userId
     ) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("user not found"));
+
         for (int idx = 0; idx < requestDTO.clothes().size(); idx++) {
             RegisterClothesDTO clothesDTO = requestDTO.clothes().get(idx);
             MultipartFile file = files.get(idx);
@@ -119,9 +123,12 @@ public class ClothesService {
                             .clothesType(ClothesType.fromDescription(clothesDTO.clothesType()))
                             .seasonType(clothesDTO.seasonType())
                             .clothesStorageType(clothesStorageType)
+                            .user(user)
                             .build()
             );
-            String imagePath = uploadS3Image(file, clothes.getId(), clothesStorageType, userId);
+            String imagePath = amazonS3Service.uploadClothes(
+                    file, userId, clothesStorageType, clothes.getName()
+            );
             clothes.updateImage(imagePath);
         }
         //TODO 벡터 lambda
@@ -137,7 +144,9 @@ public class ClothesService {
         Clothes clothes = clothesRepository.findByIdAndUserId(clothesId, userId)
                 .orElseThrow(() -> new IllegalArgumentException("Clothes not found"));
         if (image != null) {
-            String imagePath = uploadS3Image(image, clothes.getId(), clothes.getClothesStorageType(), userId);
+            String imagePath = amazonS3Service.uploadClothes(
+                    image, userId, clothes.getClothesStorageType(), clothes.getName()
+            );
             clothes.updateImage(imagePath);
         }
         clothes.update(requestDTO);
@@ -197,30 +206,6 @@ public class ClothesService {
                                 List<ClothesResponseDTO.ClothesItemDTO> cap,
                                 List<ClothesResponseDTO.ClothesItemDTO> outer,
                                 List<ClothesResponseDTO.ClothesItemDTO> overall) {
-    }
-
-    private String uploadS3Image(
-            MultipartFile image,
-            Long clothesId,
-            ClothesStorageType clothesStorageType,
-            Long userId
-    ) {
-        String key = generateImageS3Key(clothesId, clothesStorageType, userId);
-        return amazonS3Service.upload(image, key);
-    }
-
-    private String generateImageS3Key(
-            Long clothesId,
-            ClothesStorageType clothesStorageType,
-            Long userId
-    ) {
-        String name = aesEncryptionUtil.encrypt(clothesId.toString());
-        return "users/"
-                + userId
-                + "/items/"
-                + clothesStorageType.name().toLowerCase()
-                + "/"
-                + name;
     }
 
     private void checkDuplicateClothesName(String name, Long userId) {

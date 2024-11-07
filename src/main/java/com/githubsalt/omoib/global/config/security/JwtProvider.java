@@ -61,7 +61,7 @@ public class JwtProvider {
 
     //Token에서 User ID 추출
     public Long getUserId(String token) {
-        return parseClaims(token).get("memberId", Long.class);
+        return parseClaims(token).get("userId", Long.class);
     }
 
     public Long getUserId(HttpServletRequest request) {
@@ -88,7 +88,8 @@ public class JwtProvider {
     }
 
     public String resolveToken(HttpServletRequest request) {
-        return request.getHeader("Authorization");
+        String[] split = request.getHeader("Authorization").split(" ");
+        return split[split.length - 1];
     }
 
     public Authentication getAuthentication(String token) {
