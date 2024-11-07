@@ -1,7 +1,9 @@
 package com.githubsalt.omoib.history;
 
 import com.githubsalt.omoib.history.dto.HistoryBriefListDTO;
-import com.githubsalt.omoib.history.dto.HistoryResponseDTO;
+import com.githubsalt.omoib.history.dto.HistoryReviewDTO;
+import com.githubsalt.omoib.review.Review;
+import com.githubsalt.omoib.review.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import java.util.List;
 public class HistoryController {
 
     private final HistoryService historyService;
+    private final ReviewService reviewService;
 
     /**
      * 특정 History 조회
@@ -24,15 +27,17 @@ public class HistoryController {
      * @return
      */
     @GetMapping("/{historyId}")
-    public ResponseEntity<HistoryResponseDTO> getHistory(@PathVariable Long historyId) {
-        HistoryResponseDTO history;
+    public ResponseEntity<HistoryReviewDTO> getHistory(@PathVariable Long historyId) {
+        History history;
+        Review review;
         try {
-            history = HistoryResponseDTO.of(historyService.findHistory(historyId));
+            history = historyService.findHistory(historyId);
+            review = reviewService.findReview(historyId).orElse(null);
         } catch (IllegalArgumentException e) {
             log.error("History 조회 중 오류가 발생했습니다: ", e);
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(history);
+        return ResponseEntity.ok(HistoryReviewDTO.build(history, review));
     }
 
     /**

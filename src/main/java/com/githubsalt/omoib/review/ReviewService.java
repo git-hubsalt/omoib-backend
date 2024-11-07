@@ -39,12 +39,11 @@ public class ReviewService {
 
         // 리뷰 저장
         reviewRepository.save(review);
-        return new ReviewResponseDTO(review.getHistory().getId(), review.getTemperatureSuitability(), review.getPreference());
+        return new ReviewResponseDTO(review.getHistory().getId(), review.getText());
     }
 
     private Review updateReview(ReviewRequestDTO requestDTO, Review review) {
-        review.setTemperatureSuitability(requestDTO.temperatureSuitability());
-        review.setPreference(requestDTO.preference());
+        review.setText(requestDTO.text());
         return review;
     }
 
@@ -52,8 +51,7 @@ public class ReviewService {
         log.info("리뷰 생성: {}", requestDTO);
         return Review.builder()
                 .history(historyService.findHistory(requestDTO.historyId()))
-                .temperatureSuitability(requestDTO.temperatureSuitability())
-                .preference(requestDTO.preference())
+                .text(requestDTO.text())
                 .build();
     }
 

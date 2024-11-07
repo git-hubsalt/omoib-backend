@@ -1,5 +1,6 @@
 package com.githubsalt.omoib.clothes.domain;
 
+ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.githubsalt.omoib.clothes.converter.ClothesTypeConverter;
 import com.githubsalt.omoib.clothes.converter.SeasonTypeConverter;
 import com.githubsalt.omoib.clothes.dto.UpdateClothesRequestDTO;
@@ -53,10 +54,12 @@ public class Clothes {
     @Column(name = "clothes_storage_type", nullable = false)
     private ClothesStorageType clothesStorageType;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "clothesList")
     private List<History> historyList; // 이 옷을 추천받은 History 목록
 
