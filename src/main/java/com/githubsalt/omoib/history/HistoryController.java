@@ -47,18 +47,20 @@ public class HistoryController {
      * @return
      */
     @GetMapping("/users/{userId}/histories")
-    public ResponseEntity<List<HistoryBriefListDTO>> getHistories(@PathVariable Long userId, @RequestParam(name = "historyType") HistoryType historyType) {
-        List<HistoryBriefListDTO> histories = new ArrayList<>();
+    public ResponseEntity<List<HistoryReviewDTO>> getHistories(@PathVariable Long userId, @RequestParam(name = "historyType") HistoryType historyType) {
+        List<History> histories;
+        List<HistoryReviewDTO> historyReviewDTOs = new ArrayList<>();
         try {
-            List<History> historyList = historyService.findHistories(userId, historyType);
-            for (History history : historyList) {
-                histories.add(HistoryBriefListDTO.of(history));
+            histories = historyService.findHistories(userId, historyType);
+            for (History history : histories) {
+                Review review = reviewService.findReview(history.getId()).orElseThrow(() -> new IllegalArgumentException("History id {%d} 에 연결된 Review가 존재하지 않습니다.".formatted(history.getId())));
+                historyReviewDTOs.add(HistoryReviewDTO.build(history, review));
             }
         } catch (IllegalArgumentException e) {
             log.error("History 조회 중 오류가 발생했습니다: ", e);
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(histories);
+        return ResponseEntity.ok(historyReviewDTOs);
     }
 
     /**
