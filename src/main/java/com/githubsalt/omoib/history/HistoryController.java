@@ -1,5 +1,6 @@
 package com.githubsalt.omoib.history;
 
+import com.githubsalt.omoib.history.dto.HistoryResponseDTO;
 import com.githubsalt.omoib.history.dto.HistoryReviewDTO;
 import com.githubsalt.omoib.review.Review;
 import com.githubsalt.omoib.review.ReviewService;
@@ -20,8 +21,6 @@ public class HistoryController {
     private final HistoryService historyService;
     private final ReviewService reviewService;
 
-    // TODO: JWT 토큰을 이용한 사용자 인증 처리 구현
-
     /**
      * 특정 History 조회
      * @param historyId
@@ -33,7 +32,7 @@ public class HistoryController {
         Review review;
         try {
             history = historyService.findHistory(historyId);
-            review = reviewService.findReview(historyId).orElseThrow(() -> new IllegalArgumentException("History에 연결된 Review가 존재하지 않습니다."));
+            review = reviewService.findReview(historyId).orElse(null);
         } catch (IllegalArgumentException e) {
             log.error("History 조회 중 오류가 발생했습니다: ", e);
             return ResponseEntity.badRequest().build();
@@ -48,20 +47,19 @@ public class HistoryController {
      * @return
      */
     @GetMapping("/users/{userId}/histories")
-    public ResponseEntity<List<HistoryReviewDTO>> getHistories(@PathVariable Long userId, @RequestParam(name = "historyType") HistoryType historyType) {
+    public ResponseEntity<List<HistoryResponseDTO>> getHistories(@PathVariable Long userId, @RequestParam(name = "historyType") HistoryType historyType) {
         List<History> histories;
-        List<HistoryReviewDTO> historyReviewDTOs = new ArrayList<>();
+        List<HistoryResponseDTO> historyResponseDTOs = new ArrayList<>();
         try {
             histories = historyService.findHistories(userId, historyType);
             for (History history : histories) {
-                Review review = reviewService.findReview(history.getId()).orElseThrow(() -> new IllegalArgumentException("History id {%d} 에 연결된 Review가 존재하지 않습니다.".formatted(history.getId())));
-                historyReviewDTOs.add(HistoryReviewDTO.build(history, review));
+                historyResponseDTOs.add(HistoryResponseDTO.of(history));
             }
         } catch (IllegalArgumentException e) {
             log.error("History 조회 중 오류가 발생했습니다: ", e);
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(historyReviewDTOs);
+        return ResponseEntity.ok(historyResponseDTOs);
     }
 
     /**

@@ -35,7 +35,7 @@ public class CodyRecommendationService {
             throw new IllegalStateException("이미 추천 요청이 진행 중입니다.");
         }
 
-        String timestamp = historyService.createPendingHistory(userId, HistoryType.RECOMMENDATION);
+        String timestamp = historyService.createPendingHistory(userId, HistoryType.RECOMMENDATION, requestDTO.filterTagList());
 
         // Issue #8: 추천 모델의 경우의 수 과다 문제로 추천 모델에 들어가는 옷의 종류를 제한함.
 
@@ -57,7 +57,6 @@ public class CodyRecommendationService {
             }
         }
 
-
         List<HistoryClothesDTO> exclude = historyService.getHistoryClothes(userId, HistoryType.RECOMMENDATION);
 
         RecommendationAIRequestDTO aiModelRequestDTO = new RecommendationAIRequestDTO(
@@ -66,7 +65,7 @@ public class CodyRecommendationService {
                 briefRequiredClothesList,
                 briefCandidateClothesList, exclude);
 
-        lambdaService.invokeLambdaAsync("the-lambda-name-which-is-not-created-yet   ", aiModelRequestDTO); // todo: lambda function name
+        // TODO 추천 모델 endpoint 호출
     }
 
     public void response(SqsRecommendResponseMessageDTO message) {

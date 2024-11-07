@@ -7,6 +7,7 @@ import com.githubsalt.omoib.history.dto.HistoryClothesDTO;
 import java.util.List;
 
 public record RecommendationAIRequestDTO(Long userId,
+                                         // List<String> filterTagList,
                                          String timestamp,
                                          List<BriefClothesDTO> requiredClothes,
                                          List<BriefClothesDTO> clothesList,
