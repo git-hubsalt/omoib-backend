@@ -1,10 +1,14 @@
 package com.githubsalt.omoib.history;
 
+import com.githubsalt.omoib.history.dto.HistoryReviewDTO;
+import com.githubsalt.omoib.review.Review;
+import com.githubsalt.omoib.review.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -14,6 +18,7 @@ import java.util.List;
 public class HistoryController {
 
     private final HistoryService historyService;
+    private final ReviewService reviewService;
 
     // TODO: JWT 토큰을 이용한 사용자 인증 처리 구현
 
@@ -23,15 +28,17 @@ public class HistoryController {
      * @return
      */
     @GetMapping("/{historyId}")
-    public ResponseEntity<History> getHistory(@PathVariable Long historyId) {
+    public ResponseEntity<HistoryReviewDTO> getHistory(@PathVariable Long historyId) {
         History history;
+        Review review;
         try {
             history = historyService.findHistory(historyId);
+            review = reviewService.findReview(historyId).orElseThrow(() -> new IllegalArgumentException("History에 연결된 Review가 존재하지 않습니다."));
         } catch (IllegalArgumentException e) {
             log.error("History 조회 중 오류가 발생했습니다: ", e);
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(history);
+        return ResponseEntity.ok(HistoryReviewDTO.build(history, review));
     }
 
     /**
@@ -41,15 +48,20 @@ public class HistoryController {
      * @return
      */
     @GetMapping("/users/{userId}/histories")
-    public ResponseEntity<List<History>> getHistories(@PathVariable Long userId, @RequestParam(name = "historyType") HistoryType historyType) {
+    public ResponseEntity<List<HistoryReviewDTO>> getHistories(@PathVariable Long userId, @RequestParam(name = "historyType") HistoryType historyType) {
         List<History> histories;
+        List<HistoryReviewDTO> historyReviewDTOs = new ArrayList<>();
         try {
             histories = historyService.findHistories(userId, historyType);
+            for (History history : histories) {
+                Review review = reviewService.findReview(history.getId()).orElseThrow(() -> new IllegalArgumentException("History id {%d} 에 연결된 Review가 존재하지 않습니다.".formatted(history.getId())));
+                historyReviewDTOs.add(HistoryReviewDTO.build(history, review));
+            }
         } catch (IllegalArgumentException e) {
             log.error("History 조회 중 오류가 발생했습니다: ", e);
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(histories);
+        return ResponseEntity.ok(historyReviewDTOs);
     }
 
     /**

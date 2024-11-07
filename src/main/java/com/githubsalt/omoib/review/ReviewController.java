@@ -28,7 +28,7 @@ public class ReviewController {
         log.info("리뷰 처리 요청: {}", formDTO);
 
         Long userId = jwtProvider.getUserId(request);
-        ReviewRequestDTO requestDTO = new ReviewRequestDTO(userId, formDTO.historyId(), formDTO.temperatureSuitability(), formDTO.preference());
+        ReviewRequestDTO requestDTO = new ReviewRequestDTO(userId, formDTO.historyId(), formDTO.text());
 
         // 리뷰 처리 로직
         ReviewResponseDTO reviewResponseDTO = reviewService.processReview(requestDTO);
