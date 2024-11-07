@@ -1,6 +1,6 @@
 package com.githubsalt.omoib.history;
 
-import com.githubsalt.omoib.history.dto.HistoryBriefListDTO;
+import com.githubsalt.omoib.history.dto.HistoryResponseDTO;
 import com.githubsalt.omoib.history.dto.HistoryReviewDTO;
 import com.githubsalt.omoib.review.Review;
 import com.githubsalt.omoib.review.ReviewService;
@@ -47,20 +47,19 @@ public class HistoryController {
      * @return
      */
     @GetMapping("/users/{userId}/histories")
-    public ResponseEntity<List<HistoryReviewDTO>> getHistories(@PathVariable Long userId, @RequestParam(name = "historyType") HistoryType historyType) {
+    public ResponseEntity<List<HistoryResponseDTO>> getHistories(@PathVariable Long userId, @RequestParam(name = "historyType") HistoryType historyType) {
         List<History> histories;
-        List<HistoryReviewDTO> historyReviewDTOs = new ArrayList<>();
+        List<HistoryResponseDTO> historyResponseDTOs = new ArrayList<>();
         try {
             histories = historyService.findHistories(userId, historyType);
             for (History history : histories) {
-                Review review = reviewService.findReview(history.getId()).orElseThrow(() -> new IllegalArgumentException("History id {%d} 에 연결된 Review가 존재하지 않습니다.".formatted(history.getId())));
-                historyReviewDTOs.add(HistoryReviewDTO.build(history, review));
+                historyResponseDTOs.add(HistoryResponseDTO.of(history));
             }
         } catch (IllegalArgumentException e) {
             log.error("History 조회 중 오류가 발생했습니다: ", e);
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(historyReviewDTOs);
+        return ResponseEntity.ok(historyResponseDTOs);
     }
 
     /**
