@@ -39,4 +39,15 @@ public class PresignedURLBuilder {
         return url;
     }
 
+    public URL buildGetPresignedURL(String filePath) {
+        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, filePath)
+                .withMethod(com.amazonaws.HttpMethod.GET)
+                .withExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 1)); // 1 min
+        log.info("Generating Presigned URL for: {}", filePath);
+
+        URL url = amazonS3.generatePresignedUrl(generatePresignedUrlRequest);
+        log.info("Generated Presigned URL: {}", url);
+        return url;
+    }
+
 }

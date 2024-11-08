@@ -7,6 +7,7 @@ import com.githubsalt.omoib.global.enums.ClothesStorageType;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,11 +62,11 @@ public class AmazonS3Service {
 
         URL url = presignedURLBuilder.buildPresignedURL(key);
         uploadFileToS3PresignedUrl(url, uploadFile);
-        return getUrlPath(url);
+        return presignedURLBuilder.buildGetPresignedURL(key).toString();
     }
 
     private String getS3DateTime() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
         return now.format(formatter);
     }
