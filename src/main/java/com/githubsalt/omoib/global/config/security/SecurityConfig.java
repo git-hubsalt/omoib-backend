@@ -28,6 +28,7 @@ public class SecurityConfig {
             "/swagger-ui.html",
             "/swagger-ui/**",
             "/lambda/**",
+            "/login/**",
     };
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
