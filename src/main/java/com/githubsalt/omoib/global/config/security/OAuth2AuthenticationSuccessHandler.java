@@ -1,5 +1,6 @@
 package com.githubsalt.omoib.global.config.security;
 
+import com.githubsalt.omoib.aws.s3.PresignedURLBuilder;
 import com.githubsalt.omoib.global.dto.CustomOAuth2User;
 import com.githubsalt.omoib.global.dto.CustomUserInfoDTO;
 import com.githubsalt.omoib.user.domain.User;
@@ -27,6 +28,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     @Value("${login.redirect.url}")
     private String loginRedirectUrl;
     private final UserRepository userRepository;
+    private final PresignedURLBuilder presignedURLBuilder;
 
     /**
      * isNewUser가 true인 경우 : 처음으로 로그인하거나 로그인은 했었지만 회원 가입 완료를 하지 않은 유저
@@ -40,27 +42,33 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         Optional<User> optionalUser = userRepository.findBySocialId(kakaoUserId);
         Long userId;
         boolean isNewUser;
+        User user;
         if (optionalUser.isEmpty()) {
-            User user = User.builder()
+            User userBuilder = User.builder()
                 .socialId(kakaoUserId)
                 .build();
-            userRepository.save(user);
-            userId = user.getId();
+            user = userRepository.save(userBuilder);
             isNewUser = true;
         } else {
-            User user = optionalUser.get();
-            userId = user.getId();
+            user = optionalUser.get();
             isNewUser = user.getName() == null;
         }
-        String accessToken = jwtProvider.createAccessToken(new CustomUserInfoDTO(userId));
-        getRedirectStrategy().sendRedirect(request, response, getRedirectUrl(loginRedirectUrl, accessToken, isNewUser));
+        String accessToken = jwtProvider.createAccessToken(new CustomUserInfoDTO(user.getId()));
+        String redirectUrl = getRedirectUrl(loginRedirectUrl, accessToken, isNewUser, user);
+        getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }
 
-    private String getRedirectUrl(String targetUrl, String token, boolean isNewUser) {
-        return UriComponentsBuilder.fromUriString(targetUrl)
-            .queryParam("token", token)
-            .queryParam("isNewUser", isNewUser)
-            .build().toUriString();
+    private String getRedirectUrl(String targetUrl, String token, boolean isNewUser, User user) {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(targetUrl)
+                .queryParam("token", token)
+                .queryParam("isNewUser", isNewUser);
+        if (user.getName() != null) {
+            builder.queryParam("username", user.getName());
+        }
+        if (user.getProfileImagePath() != null) {
+            builder.queryParam("profileUrl", presignedURLBuilder.buildGetPresignedURL(user.getProfileImagePath()));
+        }
+        return builder.build().toUriString();
     }
 
 }
