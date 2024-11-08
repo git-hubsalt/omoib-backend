@@ -35,9 +35,13 @@ public class AmazonS3Service {
             ClothesStorageType clothesStorageType,
             String clothesName
     ) {
-
+        String originalFilename = file.getOriginalFilename();
+        String fileName = clothesName;
+        if (originalFilename != null && originalFilename.contains(".")) {
+            fileName = fileName + originalFilename.substring(originalFilename.lastIndexOf("."));
+        }
         String key = String.format(
-                "users/%s/items/%s/%s", userId, clothesStorageType.name().toLowerCase(), clothesName
+                "users/%s/items/%s/%s", userId, clothesStorageType.name().toLowerCase(), fileName
         );
         return upload(file, key);
     }
