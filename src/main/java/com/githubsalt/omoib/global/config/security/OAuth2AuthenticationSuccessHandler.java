@@ -7,6 +7,10 @@ import com.githubsalt.omoib.user.domain.User;
 import com.githubsalt.omoib.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,9 +19,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.io.IOException;
-import java.util.Optional;
 
 @Slf4j
 @Component
@@ -40,7 +41,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         String kakaoUserId = oAuth2User.getAttributes().get("id").toString();
         Optional<User> optionalUser = userRepository.findBySocialId(kakaoUserId);
-        Long userId;
         boolean isNewUser;
         User user;
         if (optionalUser.isEmpty()) {
@@ -63,7 +63,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 .queryParam("token", token)
                 .queryParam("isNewUser", isNewUser);
         if (user.getName() != null) {
-            builder.queryParam("username", user.getName());
+            String encodingName = URLEncoder.encode(user.getName(), StandardCharsets.UTF_8);
+            builder.queryParam("username", encodingName);
         }
         if (user.getProfileImagePath() != null) {
             builder.queryParam("profileUrl", presignedURLBuilder.buildGetPresignedURL(user.getProfileImagePath()));
