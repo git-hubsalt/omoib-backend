@@ -47,7 +47,7 @@ public class ClothesService {
                     cloth.getName(),
                     cloth.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")),
                     tagList,
-                    cloth.getImagePath()
+                    presignedURLBuilder.buildGetPresignedURL(cloth.getImagePath()).toString()
             );
             clothesDtos.add(clothesItemDTO);
         }
@@ -170,7 +170,7 @@ public class ClothesService {
                 clothes.getName(),
                 clothes.getClothesType(),
                 clothes.getSeasonType(),
-                presignedURLBuilder.buildPresignedURL(clothes.getImagePath()).toString()
+                presignedURLBuilder.buildGetPresignedURL(clothes.getImagePath()).toString()
         );
     }
 

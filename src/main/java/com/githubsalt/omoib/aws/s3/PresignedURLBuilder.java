@@ -1,5 +1,6 @@
 package com.githubsalt.omoib.aws.s3;
 
+import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import java.net.URL;
@@ -28,20 +29,17 @@ public class PresignedURLBuilder {
     }
 
 
-    public URL buildPresignedURL(String filePath) {
-        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, filePath)
-                .withMethod(com.amazonaws.HttpMethod.PUT)
-                .withExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 1)); // 1 min
-        log.info("Generating Presigned URL for: {}", filePath);
-
-        URL url = amazonS3.generatePresignedUrl(generatePresignedUrlRequest);
-        log.info("Generated Presigned URL: {}", url);
-        return url;
+    public URL buildPutPresignedURL(String filePath) {
+        return buildPresignedURL(filePath, HttpMethod.PUT);
     }
 
     public URL buildGetPresignedURL(String filePath) {
+        return buildPresignedURL(filePath, HttpMethod.GET);
+    }
+
+    private URL buildPresignedURL(String filePath, HttpMethod method) {
         GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, filePath)
-                .withMethod(com.amazonaws.HttpMethod.GET)
+                .withMethod(method)
                 .withExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 1)); // 1 min
         log.info("Generating Presigned URL for: {}", filePath);
 

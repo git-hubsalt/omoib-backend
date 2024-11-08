@@ -50,7 +50,7 @@ public class PresignedURLBuilderIntegrationTest {
         String filePath = testUrl;
 
         // When
-        URL presignedUrl = presignedURLBuilder.buildPresignedURL(filePath);
+        URL presignedUrl = presignedURLBuilder.buildGetPresignedURL(filePath);
 
         // Then
         assertNotNull(presignedUrl);

@@ -1,5 +1,6 @@
 package com.githubsalt.omoib.user.service;
 
+import com.githubsalt.omoib.aws.s3.PresignedURLBuilder;
 import com.githubsalt.omoib.closet.dto.SignupRequestDTO;
 import com.githubsalt.omoib.global.service.AmazonS3Service;
 import com.githubsalt.omoib.user.domain.User;
@@ -18,6 +19,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final AmazonS3Service amazonS3Service;
+    private final PresignedURLBuilder presignedURLBuilder;
 
     public Optional<User> findUser(Long userId) {
         return userRepository.findById(userId);
@@ -40,8 +42,8 @@ public class UserService {
         return GetMypageResponseDTO.builder()
                 .name(user.getName())
                 .email("dlwjddnr0213@gmail.com")
-                .rowImagePath(user.getRowImagePath())
-                .profileImagePath(user.getProfileImagePath())
+                .rowImagePath(presignedURLBuilder.buildGetPresignedURL(user.getRowImagePath()).toString())
+                .profileImagePath(presignedURLBuilder.buildGetPresignedURL(user.getProfileImagePath()).toString())
                 .build();
     }
 

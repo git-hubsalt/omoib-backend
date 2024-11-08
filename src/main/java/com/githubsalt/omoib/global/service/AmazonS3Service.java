@@ -60,9 +60,9 @@ public class AmazonS3Service {
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(uploadFile.getContentType());
 
-        URL url = presignedURLBuilder.buildPresignedURL(key);
+        URL url = presignedURLBuilder.buildPutPresignedURL(key);
         uploadFileToS3PresignedUrl(url, uploadFile);
-        return presignedURLBuilder.buildGetPresignedURL(key).toString();
+        return key;
     }
 
     private String getS3DateTime() {
