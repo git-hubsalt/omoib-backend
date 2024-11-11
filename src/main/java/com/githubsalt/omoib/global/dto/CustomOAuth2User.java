@@ -45,4 +45,12 @@ public class CustomOAuth2User implements OAuth2User {
         return (Long) attributes.get("userId");
     }
 
+    public String getEmail() {
+        Object kakaoAccountObj = attributes.get("kakao_account");
+        if (kakaoAccountObj instanceof HashMap) {
+            return ((HashMap<String, String>) kakaoAccountObj).get("email");
+        }
+        return null;
+    }
+
 }

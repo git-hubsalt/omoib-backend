@@ -46,6 +46,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         if (optionalUser.isEmpty()) {
             User userBuilder = User.builder()
                 .socialId(kakaoUserId)
+                .email(oAuth2User.getEmail())
                 .build();
             user = userRepository.save(userBuilder);
             isNewUser = true;

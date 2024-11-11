@@ -21,6 +21,9 @@ public class User {
     @Column(name = "social_id")
     private String socialId;
 
+    @Column(name = "email")
+    private String email;
+
     @Column(name = "row_image_path", columnDefinition = "TEXT")
     private String rowImagePath;
 
@@ -28,8 +31,9 @@ public class User {
     private String profileImagePath;
 
     @Builder
-    public User(String socialId) {
+    public User(String socialId, String email) {
         this.socialId = socialId;
+        this.email = email;
     }
 
     public void updateUser(String name, String rowImagePath, String profileImagePath) {

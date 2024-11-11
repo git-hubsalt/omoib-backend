@@ -41,7 +41,7 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("user not found"));
         return GetMypageResponseDTO.builder()
                 .name(user.getName())
-                .email("dlwjddnr0213@gmail.com")
+                .email(user.getEmail())
                 .rowImagePath(presignedURLBuilder.buildGetPresignedURL(user.getRowImagePath()).toString())
                 .profileImagePath(presignedURLBuilder.buildGetPresignedURL(user.getProfileImagePath()).toString())
                 .build();
