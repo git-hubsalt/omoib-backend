@@ -77,8 +77,6 @@ public class CodyRecommendationService {
         pendingHistory.setClothesList(clothesList);
         pendingHistory.setStatus(HistoryStatus.COMPLETED);
         historyService.updateHistory(pendingHistory);
-
-        // TODO FE endpoint 호출
     }
 
 }
