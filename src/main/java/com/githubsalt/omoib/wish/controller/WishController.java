@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,7 +41,7 @@ public class WishController {
 
     @Operation(summary = "위시에 옷 등록 (옷 정보, 옷 이미지)",
         description = "위시에 새로운 옷을 등록합니다.")
-    @PostMapping
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<Void> registerClothes(
             HttpServletRequest httpServletRequest,
         @RequestPart RegisterClothesRequestDTO requestDTO,
@@ -53,7 +54,7 @@ public class WishController {
 
     @Operation(summary = "위시에 옷 수정 (ID)",
         description = "위시에 등록했던 옷을 수정합니다.")
-    @PutMapping("/{id}")
+    @PutMapping(path = "/{id}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<Void> updateClothes(
         HttpServletRequest httpServletRequest,
         @PathVariable("id") Long clothesId,

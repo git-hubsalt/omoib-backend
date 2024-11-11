@@ -6,6 +6,7 @@ import com.githubsalt.omoib.global.dto.CustomOAuth2User;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class BodyMaskingController {
 
     @Operation(summary = "바디마스킹 이미지 등록",
         description = "바디마스킹 이미지를 등록합니다.")
-    @PostMapping("")
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> addBodyMaskingImage(@RequestPart MultipartFile image) {
         Long userId = ((CustomOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
         bodyMaskingService.addBodyMaskingImage(userId, image);

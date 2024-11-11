@@ -8,6 +8,7 @@ import com.githubsalt.omoib.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,7 +36,7 @@ public class LoginController {
 
     @Operation(summary = "회원가입",
         description = "사용자 정보를 입력하고 회원가입을 완료합니다.")
-    @PostMapping("/signup")
+    @PostMapping(path = "/signup", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<Void> signup(
         HttpServletRequest httpServletRequest,
         @RequestPart SignupRequestDTO requestDTO,
@@ -58,7 +59,7 @@ public class LoginController {
 
     @Operation(summary = "마이페이지 수정",
             description = "마이페이지를 수정합니다.")
-    @PutMapping("/mypage")
+    @PutMapping(path = "/mypage", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<GetMypageResponseDTO> updateMypage(
             HttpServletRequest httpServletRequest,
             @RequestPart UpdateMypageResponseDTO requestDTO,
