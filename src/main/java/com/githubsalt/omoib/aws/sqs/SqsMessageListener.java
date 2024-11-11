@@ -2,6 +2,7 @@ package com.githubsalt.omoib.aws.sqs;
 
 import com.githubsalt.omoib.aws.sqs.dto.SqsMaskingResponseMessageDTO;
 import com.githubsalt.omoib.aws.sqs.dto.SqsRecommendResponseMessageDTO;
+import com.githubsalt.omoib.bodymasking.service.BodyMaskingService;
 import com.githubsalt.omoib.codyrecommendation.CodyRecommendationService;
 import io.awspring.cloud.sqs.annotation.SqsListener;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +15,13 @@ import org.springframework.stereotype.Service;
 public class SqsMessageListener {
 
     private final CodyRecommendationService codyRecommendationService;
+    private final BodyMaskingService bodyMaskingService;
 
     @SqsListener("omoib-lambda-queue")
     public void handleLambdaResult(SqsMaskingResponseMessageDTO message) {
         // SQS 메시지 처리 로직
         log.info("SQS Received result: " + message);
+        bodyMaskingService.process(message.username(), message.initial_timestamp());
     }
 
     @SqsListener("omoib-recommendation-queue")

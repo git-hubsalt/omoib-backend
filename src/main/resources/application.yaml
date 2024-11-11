@@ -65,3 +65,7 @@ cloud:
     credentials:
       access-key: ${aws.access-key-id}
       secret-key: ${aws.secret-access-key}
+
+aws:
+  lambda:
+    masking-name: ${aws.lambda.masking-name}

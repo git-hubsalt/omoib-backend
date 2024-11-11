@@ -26,13 +26,13 @@ public class BodyMaskingController {
     public ResponseEntity<?> addBodyMaskingImage(@RequestPart MultipartFile image) {
         Long userId = ((CustomOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
         bodyMaskingService.addBodyMaskingImage(userId, image);
-        return ResponseEntity.ok().build();
+         return ResponseEntity.accepted().build();
     }
 
     @Operation(summary = "바디마스킹 이미지 조회",
         description = "바디마스킹 이미지를 조회합니다.")
     @GetMapping("")
-    public ResponseEntity<?> getBodyMaskingImage(@RequestParam MaskingType maskingType) {
+    public ResponseEntity<String> getBodyMaskingImage(@RequestParam MaskingType maskingType) {
         Long userId = ((CustomOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserId();
         return ResponseEntity.ok(bodyMaskingService.getBodyMaskingImage(userId, maskingType));
     }
