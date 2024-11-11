@@ -34,9 +34,9 @@ public class ClothesService {
     private final AmazonS3Service amazonS3Service;
 
     @Transactional(readOnly = true)
-    public GetClothesResponseDTO getAllClothes(Long userId) {
+    public GetClothesResponseDTO getAllClothes(ClothesStorageType clothesStorageType, Long userId) {
         ArrayList<GetClothesResponseDTO.ClothesItemDTO> clothesDtos = new ArrayList<>();
-        List<Clothes> clothes = clothesRepository.findAllByUserId(userId);
+        List<Clothes> clothes = clothesRepository.findAllByClothesStorageTypeAndUserId(clothesStorageType, userId);
         for (Clothes cloth : clothes) {
             ArrayList<String> tagList = new ArrayList<>();
             for (SeasonType seasonType : cloth.getSeasonType()) {
@@ -121,7 +121,7 @@ public class ClothesService {
                     Clothes.builder()
                             .name(clothesDTO.name())
                             .clothesType(ClothesType.fromDescription(clothesDTO.clothesType()))
-                            .seasonType(clothesDTO.seasonType())
+                            .seasonType(clothesDTO.seasonTypes())
                             .clothesStorageType(clothesStorageType)
                             .user(user)
                             .build()

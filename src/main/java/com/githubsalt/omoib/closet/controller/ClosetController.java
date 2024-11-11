@@ -36,7 +36,7 @@ public class ClosetController {
     @GetMapping
     public ResponseEntity<GetClothesResponseDTO> getCloset(HttpServletRequest request) {
         Long userId = jwtProvider.getUserId(request);
-        return ResponseEntity.ok(clothesService.getAllClothes(userId));
+        return ResponseEntity.ok(clothesService.getAllClothes(clothesStorageType, userId));
     }
 
     @Operation(summary = "옷장에 옷 등록 (옷 정보, 옷 이미지)",
