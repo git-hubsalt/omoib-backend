@@ -48,7 +48,7 @@ public class HistoryController {
      * @param historyType
      * @return
      */
-    @GetMapping("/users/histories")
+    @GetMapping("")
     public ResponseEntity<List<HistoryResponseDTO>> getHistories(HttpServletRequest request, @RequestParam(name = "historyType") HistoryType historyType) {
         Long userId = jwtProvider.getUserId(request);
 
