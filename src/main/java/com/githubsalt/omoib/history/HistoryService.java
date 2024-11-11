@@ -74,6 +74,26 @@ public class HistoryService {
         return now.format(formatter);
     }
 
+    @Transactional
+    public String createPendingFittingHistory(Long userId, List<Clothes> clothesList) {
+        User user = findUser(userId);
+        // History 생성
+        LocalDateTime now = LocalDateTime.now();
+        History history = History.builder()
+                .type(HistoryType.FITTING)
+                .date(now)
+                .user(user)
+                .clothesList(clothesList)
+                .status(HistoryStatus.PENDING)
+                .notifyStatus(NotifyStatus.NOT_YET)
+                .filterTagsString("")
+                .build();
+        historyRepository.save(history);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd-HHmmss");
+
+        return now.format(formatter);
+    }
+
 
     /**
      * 사용자의 추천 기록을 조회합니다. 해당 작업은 조회 후 알림 상태를 읽음으로 변경합니다.
