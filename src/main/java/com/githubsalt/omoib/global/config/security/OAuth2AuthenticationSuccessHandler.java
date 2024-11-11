@@ -52,6 +52,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             isNewUser = true;
         } else {
             user = optionalUser.get();
+            updateEmail(user, oAuth2User.getEmail());
             isNewUser = user.getName() == null;
         }
         String accessToken = jwtProvider.createAccessToken(new CustomUserInfoDTO(user.getId()));
@@ -71,6 +72,12 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             builder.queryParam("profileUrl", presignedURLBuilder.buildGetPresignedURL(user.getProfileImagePath()));
         }
         return builder.build().toUriString();
+    }
+
+    private void updateEmail(User user, String email) {
+        if (user.getEmail() == null) {
+            user.setEmail(email);
+        }
     }
 
 }

@@ -47,4 +47,8 @@ public class User {
             this.profileImagePath = profileImagePath;
         }
     }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }
