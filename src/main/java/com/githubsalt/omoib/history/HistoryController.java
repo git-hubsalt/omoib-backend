@@ -1,9 +1,11 @@
 package com.githubsalt.omoib.history;
 
+ import com.githubsalt.omoib.global.config.security.JwtProvider;
 import com.githubsalt.omoib.history.dto.HistoryResponseDTO;
 import com.githubsalt.omoib.history.dto.HistoryReviewDTO;
 import com.githubsalt.omoib.review.Review;
 import com.githubsalt.omoib.review.ReviewService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,7 @@ public class HistoryController {
 
     private final HistoryService historyService;
     private final ReviewService reviewService;
+    private final JwtProvider jwtProvider;
 
     /**
      * 특정 History 조회
@@ -42,12 +45,13 @@ public class HistoryController {
 
     /**
      * 사용자의 특정 타입의 전체 History 조회
-     * @param userId
      * @param historyType
      * @return
      */
-    @GetMapping("/users/{userId}/histories")
-    public ResponseEntity<List<HistoryResponseDTO>> getHistories(@PathVariable Long userId, @RequestParam(name = "historyType") HistoryType historyType) {
+    @GetMapping("/users/histories")
+    public ResponseEntity<List<HistoryResponseDTO>> getHistories(HttpServletRequest request, @RequestParam(name = "historyType") HistoryType historyType) {
+        Long userId = jwtProvider.getUserId(request);
+
         List<History> histories;
         List<HistoryResponseDTO> historyResponseDTOs = new ArrayList<>();
         try {
