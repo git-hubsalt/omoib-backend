@@ -31,7 +31,7 @@ public class History {
     @ManyToOne
     private User user; // 추천 받은 사용자
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "history_clothes",
             joinColumns = @JoinColumn(name = "history_id"),
