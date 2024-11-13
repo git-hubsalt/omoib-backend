@@ -39,7 +39,7 @@ public class DummyDataLoader implements ApplicationRunner {
         User user = User.builder()
                 .socialId("3782737851")
                 .email("test@test.test").build();
-        user.updateUser("황수민", "users/3/row/20241108-175657/row.jpg", null);
+        user.updateUser("황수민", "users/3/row/20241108-175657/row.jpg", null, null);
         userRepository.save(user);
 
         log.info("Dummy User Created");
