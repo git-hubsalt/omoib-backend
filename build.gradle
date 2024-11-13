@@ -36,6 +36,14 @@ dependencies {
 	implementation 'io.awspring.cloud:spring-cloud-aws-starter-sqs:3.1.1'
  	implementation 'com.amazonaws:aws-java-sdk-lambda:1.12.762'
 	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.771'
+	implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.1.0")
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-parameter-store'
+
+	implementation 'software.amazon.awssdk:auth:2.29.10'
+	implementation 'software.amazon.awssdk:core:2.29.10'
+	// https://mvnrepository.com/artifact/software.amazon.awssdk/sagemaker
+	implementation 'software.amazon.awssdk:sagemaker:2.29.10'
+
 
 	//jwt
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
@@ -45,9 +53,6 @@ dependencies {
 	//swagger
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
 
-	//aws
-	implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.1.0")
-	implementation 'io.awspring.cloud:spring-cloud-aws-starter-parameter-store'
 
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
