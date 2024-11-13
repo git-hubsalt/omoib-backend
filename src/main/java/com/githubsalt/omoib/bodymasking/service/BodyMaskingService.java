@@ -33,12 +33,14 @@ public class BodyMaskingService {
     private String MASKING_LAMBDA_NAME;
 
     public void addBodyMaskingImage(Long userId, MultipartFile image) {
-        userService.findUser(userId).orElseGet(() -> {
+        User user = userService.findUser(userId).orElseGet(() -> {
             log.error("User not found. userId: {}", userId);
             throw new IllegalArgumentException("User not found");
         });
 
         String key = amazonS3Service.uploadRow(image, userId);
+        user.updateUser(null, key, null, null);
+        userService.update(user);
         URL presignedURL = presignedURLBuilder.buildGetPresignedURL(key);
 
         lambdaController.invoke(MASKING_LAMBDA_NAME, new MaskingLambdaRequestDTO(userId.toString(), presignedURL.toString()));
@@ -55,6 +57,7 @@ public class BodyMaskingService {
                     createAt(LocalDateTime.parse(timestamp)).
                     build());
         }
+        user.updateUser(null, null, null, timestamp);
     }
 
     public String getBodyMaskingImage(Long userId, MaskingType maskingType) {
