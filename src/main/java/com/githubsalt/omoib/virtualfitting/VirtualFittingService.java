@@ -16,7 +16,9 @@ import com.githubsalt.omoib.virtualfitting.dto.FittingRequestDTO;
 import com.githubsalt.omoib.virtualfitting.dto.SqsFittingResponseMessageDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +32,11 @@ public class VirtualFittingService {
     private final HistoryService historyService;
     private final UserService userService;
     private final PresignedURLBuilder presignedURLBuilder;
+    private final RestTemplate restTemplate;
 
-    public void fitting(Long userId, FittingRequestDTO requestDTO) {
+    private final String fitting_endpoint = "https://runtime.sagemaker.ap-northeast-2.amazonaws.com/endpoints/vton-new-one/invocations";
+
+    public ResponseEntity<String> fitting(Long userId, FittingRequestDTO requestDTO) {
 
         if (historyService.hasPendingHistory(userId)) {
             throw new IllegalStateException("이미 피팅 요청이 진행 중입니다.");
@@ -68,8 +73,25 @@ public class VirtualFittingService {
                         userId, user.getLastMaskingTimestamp())).toString(),
                 "overall");
 
+        return sendFittingRequest(aiRequestDTO, fitting_endpoint);
+    }
 
-        // TODO 피팅 모델 endpoint 호출
+    public ResponseEntity<String> sendFittingRequest(FittingAIRequestDTO aiRequestDTO, String url) {
+        // HTTP 헤더 설정
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        // 요청 생성
+        HttpEntity<FittingAIRequestDTO> requestEntity = new HttpEntity<>(aiRequestDTO, headers);
+
+        // POST 요청 보내기
+
+        return restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                requestEntity,
+                String.class
+        );
     }
 
     public void response(SqsFittingResponseMessageDTO message) {
