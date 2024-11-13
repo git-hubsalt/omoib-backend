@@ -1,5 +1,6 @@
 package com.githubsalt.omoib.history;
 
+import com.githubsalt.omoib.aws.s3.PresignedURLBuilder;
 import com.githubsalt.omoib.clothes.domain.Clothes;
 import com.githubsalt.omoib.codyrecommendation.dto.RecommendationResultDTO;
 import com.githubsalt.omoib.history.dto.HistoryClothesDTO;
@@ -24,6 +25,7 @@ public class HistoryService {
 
     private final UserService userService;
     private final HistoryRepository historyRepository;
+    private final PresignedURLBuilder presignedURLBuilder;
 
     /**
      * 사용자의 추천 기록을 생성합니다.
@@ -132,6 +134,7 @@ public class HistoryService {
             history.setNotifyStatus(NotifyStatus.NOTIFIED);
             historyRepository.save(history);
         }
+        history.setFittingImageURL(presignedURLBuilder.buildGetPresignedURL(history.getFittingImageURL()).toString());
         return history;
     }
 
@@ -165,7 +168,7 @@ public class HistoryService {
      */
     @Transactional(readOnly = true)
     public boolean isHistoryOwner(Long userId, Long historyId) {
-        return findHistory(historyId).getUser().getId().equals(userId);
+        return historyRepository.findById(historyId).orElseThrow().getUser().getId().equals(userId);
     }
 
 
