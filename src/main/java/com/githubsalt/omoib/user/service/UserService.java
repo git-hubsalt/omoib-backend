@@ -36,7 +36,7 @@ public class UserService {
 
         String imagePath = amazonS3Service.uploadRow(image, userId);
 
-        user.updateUser(requestDTO.username(), imagePath, null, user.getLastMaskingTimestamp());
+        user.updateUser(requestDTO.username(), imagePath, null, null);
         update(user);
     }
 
@@ -69,7 +69,7 @@ public class UserService {
         if (profileImage != null) {
             profileImagePath = amazonS3Service.uploadProfile(profileImage, userId);
         }
-        user.updateUser(requestDTO.name(), rowImagePath, profileImagePath, user.getLastMaskingTimestamp());
+        user.updateUser(requestDTO.name(), rowImagePath, profileImagePath, null);
         update(user);
     }
 }

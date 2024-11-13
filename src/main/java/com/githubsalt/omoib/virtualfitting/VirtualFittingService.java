@@ -73,7 +73,7 @@ public class VirtualFittingService {
     }
 
     public void response(SqsFittingResponseMessageDTO message) {
-        History pendingHistory = historyService.findPendingHistory(message.userId(), HistoryType.FITTING);
+        History pendingHistory = historyService.findPendingHistory(Long.parseLong(message.userId()), HistoryType.FITTING);
         pendingHistory.setFittingImageURL("/users/" + message.userId() + "/vton_result/" + message.timestamp() + "result.jpg");
         pendingHistory.setStatus(HistoryStatus.COMPLETED);
         historyService.updateHistory(pendingHistory);
