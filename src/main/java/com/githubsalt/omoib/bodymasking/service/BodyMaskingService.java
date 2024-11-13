@@ -49,7 +49,7 @@ public class BodyMaskingService {
     public void process(String userId, String timestamp) {
         User user = userService.findUser(Long.parseLong(userId)).orElseThrow();
         for (MaskingType maskingType : MaskingType.values()) {
-            String key = String.format("users/%s/masking/%s/%s.jpg", userId, timestamp, maskingType.name().toLowerCase());
+            String key = String.format("users/%s/masking/%s/%s.png", userId, timestamp, maskingType.name().toLowerCase());
             bodyMaskingRepository.save(BodyMasking.builder().
                     user(user).
                     maskingType(maskingType).
