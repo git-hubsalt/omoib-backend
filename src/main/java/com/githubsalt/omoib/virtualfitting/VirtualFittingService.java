@@ -6,6 +6,7 @@ import com.githubsalt.omoib.clothes.dto.BriefClothesDTO;
 import com.githubsalt.omoib.clothes.service.ClothesService;
 import com.githubsalt.omoib.history.History;
 import com.githubsalt.omoib.history.HistoryService;
+import com.githubsalt.omoib.history.HistoryType;
 import com.githubsalt.omoib.history.enums.HistoryStatus;
 import com.githubsalt.omoib.virtualfitting.dto.FittingAIRequestDTO;
 import com.githubsalt.omoib.virtualfitting.dto.FittingRequestDTO;
@@ -52,7 +53,7 @@ public class VirtualFittingService {
     }
 
     public void response(SqsFittingResponseMessageDTO message) {
-        History pendingHistory = historyService.findPendingHistory(message.userId());
+        History pendingHistory = historyService.findPendingHistory(message.userId(), HistoryType.FITTING);
         pendingHistory.setFittingImageURL(message.imageURL());
         pendingHistory.setStatus(HistoryStatus.COMPLETED);
         historyService.updateHistory(pendingHistory);

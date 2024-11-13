@@ -115,8 +115,8 @@ public class HistoryService {
     }
 
     @Transactional(readOnly = true)
-    public History findPendingHistory(Long userId) {
-        return historyRepository.findByUserIdAndStatus(userId, HistoryStatus.PENDING).orElse(null);
+    public History findPendingHistory(Long userId, HistoryType historyType) {
+        return historyRepository.findByUserIdAndStatusAndType(userId, HistoryStatus.PENDING, historyType).orElse(null);
     }
 
     /**

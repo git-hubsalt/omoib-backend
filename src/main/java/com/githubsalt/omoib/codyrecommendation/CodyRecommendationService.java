@@ -73,7 +73,7 @@ public class CodyRecommendationService {
         for (Long clothesId : message.result()) {
             clothesList.add(clothesService.getClothes(clothesId));
         }
-        History pendingHistory = historyService.findPendingHistory(message.userId());
+        History pendingHistory = historyService.findPendingHistory(message.userId(), HistoryType.RECOMMENDATION);
         pendingHistory.setClothesList(clothesList);
         pendingHistory.setStatus(HistoryStatus.COMPLETED);
         historyService.updateHistory(pendingHistory);
