@@ -56,7 +56,7 @@ public class DummyDataLoader implements ApplicationRunner {
         Clothes lower = clothesRepository.save(
                 Clothes.builder()
                         .name("하의")
-                        .clothesType(ClothesType.lower)
+                        .clothesType(ClothesType.하의)
                         .seasonType(List.of(SeasonType.봄, SeasonType.가을))
                         .clothesStorageType(ClothesStorageType.CLOSET)
                         .user(user)
@@ -68,7 +68,7 @@ public class DummyDataLoader implements ApplicationRunner {
         Clothes upper = clothesRepository.save(
                 Clothes.builder()
                         .name("상의")
-                        .clothesType(ClothesType.upper)
+                        .clothesType(ClothesType.상의)
                         .seasonType(List.of(SeasonType.여름, SeasonType.가을))
                         .clothesStorageType(ClothesStorageType.CLOSET)
                         .user(user)

@@ -72,13 +72,13 @@ public class ClothesService {
     @Transactional(readOnly = true)
     public ClothesResponseDTO getClothesList(ClothesStorageType storageType, Long userId) {
         Map<ClothesType, ArrayList<ClothesResponseDTO.ClothesItemDTO>> typeArrayListMap = Map.of(
-                ClothesType.upper, new ArrayList<>(),
-                ClothesType.lower, new ArrayList<>(),
-                ClothesType.shoes, new ArrayList<>(),
-                ClothesType.bag, new ArrayList<>(),
-                ClothesType.cap, new ArrayList<>(),
-                ClothesType.outer, new ArrayList<>(),
-                ClothesType.overall, new ArrayList<>()
+                ClothesType.상의, new ArrayList<>(),
+                ClothesType.하의, new ArrayList<>(),
+                ClothesType.신발, new ArrayList<>(),
+                ClothesType.가방, new ArrayList<>(),
+                ClothesType.모자, new ArrayList<>(),
+                ClothesType.아우터, new ArrayList<>(),
+                ClothesType.한벌옷, new ArrayList<>()
         );
         List<Clothes> clothes = clothesRepository.findAllByClothesStorageTypeAndUserId(storageType, userId);
         for (Clothes cloth : clothes) {
@@ -97,13 +97,13 @@ public class ClothesService {
             typeArrayListMap.get(cloth.getClothesType()).add(clothesItemDTO);
         }
         return new ClothesResponseDTO(
-                typeArrayListMap.get(ClothesType.upper),
-                typeArrayListMap.get(ClothesType.lower),
-                typeArrayListMap.get(ClothesType.shoes),
-                typeArrayListMap.get(ClothesType.bag),
-                typeArrayListMap.get(ClothesType.cap),
-                typeArrayListMap.get(ClothesType.outer),
-                typeArrayListMap.get(ClothesType.overall)
+                typeArrayListMap.get(ClothesType.상의),
+                typeArrayListMap.get(ClothesType.하의),
+                typeArrayListMap.get(ClothesType.신발),
+                typeArrayListMap.get(ClothesType.가방),
+                typeArrayListMap.get(ClothesType.모자),
+                typeArrayListMap.get(ClothesType.아우터),
+                typeArrayListMap.get(ClothesType.한벌옷)
         );
     }
 

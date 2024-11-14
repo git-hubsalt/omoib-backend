@@ -4,14 +4,14 @@ import com.githubsalt.omoib.global.interfaces.ValuedEnum;
 import lombok.Getter;
 
 public enum ClothesType implements ValuedEnum {
-    upper(1, "상의"),
-    lower(2, "하의"),
-    shoes(3, "신발"),
-    bag(4, "가방"),
-    cap(5, "모자"),
-    outer(6, "아우터"),
-    overall(7, "한벌옷"),
-    other(8, "기타");
+    상의(1, "상의"),
+    하의(2, "하의"),
+    신발(3, "신발"),
+    가방(4, "가방"),
+    모자(5, "모자"),
+    아우터(6, "아우터"),
+    한벌옷(7, "한벌옷"),
+    기타(8, "기타");
 
     private final int value;
     @Getter
