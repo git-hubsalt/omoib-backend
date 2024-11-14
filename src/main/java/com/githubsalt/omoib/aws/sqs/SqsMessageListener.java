@@ -35,7 +35,7 @@ public class SqsMessageListener {
     }
 
     @SqsListener("omoib-vton-queue")
-    public void handleRecommendationResult(SqsFittingResponseMessageDTO message) {
+    public void handleFittingResult(SqsFittingResponseMessageDTO message) {
         // SQS 메시지 처리 로직
         log.info("Vton: SQS Received result: " + message);
         virtualFittingService.response(message);
