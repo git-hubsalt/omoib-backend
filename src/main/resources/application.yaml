@@ -70,6 +70,8 @@ cloud:
     credentials:
       access-key: ${aws.access-key-id}
       secret-key: ${aws.secret-access-key}
+    region:
+      static: ${aws.region}
 
 aws:
   lambda:
