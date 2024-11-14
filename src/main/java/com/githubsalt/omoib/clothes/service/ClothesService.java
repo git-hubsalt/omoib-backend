@@ -116,7 +116,7 @@ public class ClothesService {
             RegisterClothesDTO clothesDTO = requestDTO.clothes().get(idx);
             MultipartFile file = files.get(idx);
 
-            checkDuplicateClothesName(clothesDTO.name(), userId);
+            checkDuplicateClothesName(clothesDTO.name(), userId, clothesStorageType);
             Clothes clothes = clothesRepository.save(
                     Clothes.builder()
                             .name(clothesDTO.name())
@@ -208,8 +208,10 @@ public class ClothesService {
                                 List<ClothesResponseDTO.ClothesItemDTO> overall) {
     }
 
-    private void checkDuplicateClothesName(String name, Long userId) {
-        boolean isDuplicateName = clothesRepository.existsByNameAndUserId(name, userId);
+    private void checkDuplicateClothesName(String name, Long userId, ClothesStorageType clothesStorageType) {
+        boolean isDuplicateName = clothesRepository.existsByNameAndUserIdAndClothesStorageType(
+                name, userId, clothesStorageType
+        );
         if (isDuplicateName) {
             throw new IllegalArgumentException("중복된 이름의 옷입니다.");
         }

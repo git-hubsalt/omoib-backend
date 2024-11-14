@@ -10,7 +10,8 @@ public enum ClothesType implements ValuedEnum {
     bag(4, "가방"),
     cap(5, "모자"),
     outer(6, "아우터"),
-    overall(7, "한벌옷");
+    overall(7, "한벌옷"),
+    other(8, "기타");
 
     private final int value;
     @Getter
