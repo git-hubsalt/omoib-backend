@@ -69,7 +69,7 @@ public class VirtualFittingService {
             return;
         }
         for (History pendingHistory : pendingHistories) {
-            pendingHistory.setFittingImageURL("/users/" + message.userId() + "/vton_result/" + message.initial_timestamp() + "/result.jpg");
+            pendingHistory.setFittingImageURL("users/" + message.userId() + "/vton_result/" + message.initial_timestamp() + "/result.jpg");
             pendingHistory.setStatus(HistoryStatus.COMPLETED);
             historyService.updateHistory(pendingHistory);
         }
