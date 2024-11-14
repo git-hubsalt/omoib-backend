@@ -3,7 +3,7 @@ package com.githubsalt.omoib.codyrecommendation;
 import com.githubsalt.omoib.aws.lambda.LambdaService;
 import com.githubsalt.omoib.aws.sqs.dto.SqsRecommendResponseMessageDTO;
 import com.githubsalt.omoib.clothes.domain.Clothes;
-import com.githubsalt.omoib.clothes.dto.BriefClothesDTO;
+import com.githubsalt.omoib.clothes.dto.BriefClothesAIDTO;
 import com.githubsalt.omoib.clothes.dto.ClothesResponseDTO;
 import com.githubsalt.omoib.clothes.service.ClothesService;
 import com.githubsalt.omoib.codyrecommendation.dto.RecommendationAIRequestDTO;
@@ -46,14 +46,18 @@ public class CodyRecommendationService {
         allClothesItems.addAll(clothesResponseDTO.lower());
         allClothesItems.addAll(clothesResponseDTO.overall());
 
-        List<BriefClothesDTO> briefRequiredClothesList = new ArrayList<>();
-        List<BriefClothesDTO> briefCandidateClothesList = new ArrayList<>();
+        List<BriefClothesAIDTO> briefRequiredClothesList = new ArrayList<>();
+        List<BriefClothesAIDTO> briefCandidateClothesList = new ArrayList<>();
         for (ClothesResponseDTO.ClothesItemDTO clothesItemDTO : allClothesItems) {
             // 필수 옷 처리
             if (requestDTO.requiredClothes().contains(clothesItemDTO.id())) {
-                briefRequiredClothesList.add(clothesService.getBriefClothes(clothesItemDTO.id()));
+                briefRequiredClothesList.add(BriefClothesAIDTO.of(
+                        clothesService.getBriefClothes(clothesItemDTO.id())
+                ));
             } else {
-                briefCandidateClothesList.add(clothesService.getBriefClothes(clothesItemDTO.id()));
+                briefCandidateClothesList.add(BriefClothesAIDTO.of(
+                        clothesService.getBriefClothes(clothesItemDTO.id())
+                ));
             }
         }
 
@@ -63,7 +67,9 @@ public class CodyRecommendationService {
                 userId,
                 timestamp,
                 briefRequiredClothesList,
-                briefCandidateClothesList, exclude);
+                briefCandidateClothesList,
+                exclude,
+                String.join(",", requestDTO.filterTagList()));
 
         // TODO 추천 모델 endpoint 호출
     }
