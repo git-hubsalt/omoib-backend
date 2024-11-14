@@ -57,7 +57,7 @@ public class VirtualFittingService {
                 "overall");
 
 
-        sageMakerInvoker.invokeEndpoint("vton-new-three", aiRequestDTO);
+        sageMakerInvoker.invokeEndpoint("vton-fp16-2", aiRequestDTO);
     }
 
 
