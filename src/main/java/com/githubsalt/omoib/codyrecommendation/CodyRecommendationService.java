@@ -1,6 +1,5 @@
 package com.githubsalt.omoib.codyrecommendation;
 
-import com.githubsalt.omoib.aws.lambda.LambdaService;
 import com.githubsalt.omoib.aws.sqs.dto.SqsRecommendResponseMessageDTO;
 import com.githubsalt.omoib.clothes.domain.Clothes;
 import com.githubsalt.omoib.clothes.dto.BriefClothesAIDTO;
@@ -8,6 +7,7 @@ import com.githubsalt.omoib.clothes.dto.ClothesResponseDTO;
 import com.githubsalt.omoib.clothes.service.ClothesService;
 import com.githubsalt.omoib.codyrecommendation.dto.RecommendationAIRequestDTO;
 import com.githubsalt.omoib.codyrecommendation.dto.RecommendationRequestDTO;
+import com.githubsalt.omoib.global.config.aws.SageMakerInvoker;
 import com.githubsalt.omoib.history.History;
 import com.githubsalt.omoib.history.HistoryService;
 import com.githubsalt.omoib.history.HistoryType;
@@ -27,7 +27,7 @@ public class CodyRecommendationService {
 
     private final ClothesService clothesService;
     private final HistoryService historyService;
-    private final LambdaService lambdaService;
+    private final SageMakerInvoker sageMakerInvoker;
 
     public void recommend(Long userId, RecommendationRequestDTO requestDTO) {
 
@@ -64,14 +64,14 @@ public class CodyRecommendationService {
         List<HistoryClothesDTO> exclude = historyService.getHistoryClothes(userId, HistoryType.RECOMMENDATION);
 
         RecommendationAIRequestDTO aiModelRequestDTO = new RecommendationAIRequestDTO(
-                userId,
+                userId.toString(),
                 timestamp,
                 briefRequiredClothesList,
                 briefCandidateClothesList,
                 exclude,
                 String.join(",", requestDTO.filterTagList()));
 
-        // TODO 추천 모델 endpoint 호출
+        sageMakerInvoker.invokeEndpoint("cody-recommendation", aiModelRequestDTO);
     }
 
     public void response(SqsRecommendResponseMessageDTO message) {
@@ -79,7 +79,7 @@ public class CodyRecommendationService {
         for (Long clothesId : message.result()) {
             clothesList.add(clothesService.getClothes(clothesId));
         }
-        History pendingHistory = historyService.findPendingHistory(message.userId(), HistoryType.RECOMMENDATION);
+        History pendingHistory = historyService.findPendingHistory(Long.parseLong(message.userId()), HistoryType.RECOMMENDATION);
         pendingHistory.setClothesList(clothesList);
         pendingHistory.setStatus(HistoryStatus.COMPLETED);
         historyService.updateHistory(pendingHistory);

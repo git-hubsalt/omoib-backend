@@ -28,8 +28,8 @@ public class VirtualFittingController {
         log.info("가상 피팅 요청: {}", requestDTO);
 
         Long userId = jwtProvider.getUserId(request);
-        return virtualFittingService.fitting(userId, requestDTO);
+        virtualFittingService.fitting(userId, requestDTO);
 
-//        return ResponseEntity.accepted().build();
+        return ResponseEntity.accepted().build();
     }
 }
