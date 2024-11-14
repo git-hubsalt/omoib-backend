@@ -36,9 +36,11 @@ public class DummyDataLoader implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         log.info("Dummy Data Load Start");
-        User user = User.builder()
-                .socialId("3782737851")
-                .email("test@test.test").build();
+        User user = userRepository.findBySocialId("3782737851").orElse(
+                User.builder()
+                        .socialId("3782737851")
+                        .email("test@test.test").build()
+        );
         user.updateUser("황수민", "users/3/row/20241108-175657/row.jpg", null);
         userRepository.save(user);
 
