@@ -36,7 +36,9 @@ public class User {
         this.email = email;
     }
 
-    public void updateUser(String name, String rowImagePath, String profileImagePath) {
+    private String lastMaskingTimestamp;
+
+    public void updateUser(String name, String rowImagePath, String profileImagePath, String lastMaskingTimestamp) {
         if (name != null) {
             this.name = name;
         }
@@ -45,6 +47,9 @@ public class User {
         }
         if (profileImagePath != null) {
             this.profileImagePath = profileImagePath;
+        }
+        if (lastMaskingTimestamp != null) {
+            this.lastMaskingTimestamp = lastMaskingTimestamp;
         }
     }
 

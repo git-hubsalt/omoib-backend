@@ -21,7 +21,7 @@ public class VirtualFittingController {
     private final JwtProvider jwtProvider;
 
     @PostMapping("/fitting")
-    public ResponseEntity<Void> fitting(
+    public ResponseEntity<String> fitting(
             HttpServletRequest request,
             @RequestBody FittingRequestDTO requestDTO) {
 

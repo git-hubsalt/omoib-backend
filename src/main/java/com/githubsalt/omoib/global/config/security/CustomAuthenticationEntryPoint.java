@@ -28,6 +28,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         ErrorResponse errorResponse = new ErrorResponse("Invalid token");
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
-        log.error("timestamp: " + errorResponse.getTimestamp() + ", message: ", e);
+        log.error("initial_timestamp: " + errorResponse.getTimestamp() + ", message: ", e);
     }
 }

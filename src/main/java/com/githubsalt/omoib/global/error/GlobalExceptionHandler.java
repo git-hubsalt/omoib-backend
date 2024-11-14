@@ -13,7 +13,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     ResponseEntity<ErrorResponse> handleCommonException(Exception e) {
         ErrorResponse response = new ErrorResponse(e.getMessage());
-        log.error("timestamp: " + response.getTimestamp() + ", message: ", e);
+        log.error("initial_timestamp: " + response.getTimestamp() + ", message: ", e);
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(response);

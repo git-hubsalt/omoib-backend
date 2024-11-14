@@ -1,10 +1,11 @@
 package com.githubsalt.omoib.virtualfitting.dto;
 
-import com.githubsalt.omoib.clothes.dto.BriefClothesDTO;
-
-import java.util.List;
-
-public record FittingAIRequestDTO(Long userId,
+public record FittingAIRequestDTO(String userId,
                                   String timestamp,
-                                  List<BriefClothesDTO> clothes) {
+                                  String person_image_url,
+                                  String upper_cloth_url,
+                                  String lower_cloth_url,
+                                  String mask_image_url,
+                                  String cloth_type
+) {
 }

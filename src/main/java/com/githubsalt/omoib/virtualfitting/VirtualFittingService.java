@@ -1,14 +1,18 @@
 package com.githubsalt.omoib.virtualfitting;
 
-import com.githubsalt.omoib.aws.dto.SqsFittingResponseMessageDTO;
+import com.githubsalt.omoib.aws.s3.PresignedURLBuilder;
 import com.githubsalt.omoib.clothes.domain.Clothes;
-import com.githubsalt.omoib.clothes.dto.BriefClothesDTO;
 import com.githubsalt.omoib.clothes.service.ClothesService;
+import com.githubsalt.omoib.global.config.aws.SageMakerInvoker;
 import com.githubsalt.omoib.history.History;
 import com.githubsalt.omoib.history.HistoryService;
+import com.githubsalt.omoib.history.HistoryType;
 import com.githubsalt.omoib.history.enums.HistoryStatus;
+import com.githubsalt.omoib.user.domain.User;
+import com.githubsalt.omoib.user.service.UserService;
 import com.githubsalt.omoib.virtualfitting.dto.FittingAIRequestDTO;
 import com.githubsalt.omoib.virtualfitting.dto.FittingRequestDTO;
+import com.githubsalt.omoib.virtualfitting.dto.SqsFittingResponseMessageDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,6 +27,9 @@ public class VirtualFittingService {
 
     private final ClothesService clothesService;
     private final HistoryService historyService;
+    private final UserService userService;
+    private final PresignedURLBuilder presignedURLBuilder;
+    private final SageMakerInvoker sageMakerInvoker;
 
     public void fitting(Long userId, FittingRequestDTO requestDTO) {
 
@@ -30,30 +37,37 @@ public class VirtualFittingService {
             throw new IllegalStateException("이미 피팅 요청이 진행 중입니다.");
         }
 
-        List<BriefClothesDTO> briefClothes = requestDTO.clothes();
-        List<Clothes> clothesList = new ArrayList<>();
-        for (BriefClothesDTO briefClothesDTO : briefClothes) {
-            Clothes clothesItem = clothesService.getClothes(briefClothesDTO.id());
-            clothesList.add(clothesItem);
-            if (clothesItem == null) {
-                throw new IllegalArgumentException("존재하지 않는 옷입니다.");
-            }
+        Clothes upper = clothesService.getClothes(requestDTO.upperClothesId());
+        Clothes lower = clothesService.getClothes(requestDTO.lowerClothesId());
+
+        if (upper == null || lower == null) {
+            throw new IllegalArgumentException("상의와 하의를 모두 선택해주세요.");
         }
+        String timestamp = historyService.createPendingFittingHistory(userId, new ArrayList<>(List.of(upper, lower)));
 
-        String timestamp = historyService.createPendingFittingHistory(userId, clothesList);
-
+        User user = userService.findUser(userId).orElseThrow();
         FittingAIRequestDTO aiRequestDTO = new FittingAIRequestDTO(
-                userId,
+                userId.toString(),
                 timestamp,
-                requestDTO.clothes()
-        );
+                presignedURLBuilder.buildGetPresignedURL(user.getRowImagePath()).toString(),
+                presignedURLBuilder.buildGetPresignedURL(upper.getImagePath()).toString(),
+                presignedURLBuilder.buildGetPresignedURL(lower.getImagePath()).toString(),
+                presignedURLBuilder.buildGetPresignedURL(String.format("users/%s/masking/%s/overall.png",
+                        1234/*user.getSocialId()*/, user.getLastMaskingTimestamp())).toString(), // TODO rollback
+                "overall");
 
-        // TODO 피팅 모델 endpoint 호출
+
+        sageMakerInvoker.invokeEndpoint("vton-new-three", aiRequestDTO);
     }
 
+
     public void response(SqsFittingResponseMessageDTO message) {
-        History pendingHistory = historyService.findPendingHistory(message.userId());
-        pendingHistory.setFittingImageURL(message.imageURL());
+        History pendingHistory = historyService.findPendingHistory(Long.parseLong(message.userId()), HistoryType.FITTING);
+        if (pendingHistory == null) {
+            log.error("Pending history not found. userId: {}, type: {}", message.userId(), HistoryType.FITTING);
+            return;
+        }
+        pendingHistory.setFittingImageURL("/users/" + message.userId() + "/vton_result/" + message.initial_timestamp() + "/result.jpg");
         pendingHistory.setStatus(HistoryStatus.COMPLETED);
         historyService.updateHistory(pendingHistory);
     }

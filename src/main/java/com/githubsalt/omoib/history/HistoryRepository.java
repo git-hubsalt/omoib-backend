@@ -14,6 +14,6 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
     List<History> findByUserAndType(User user, HistoryType type);
 
     boolean existsByUserIdAndStatus(Long userId, HistoryStatus historyStatus);
-    Optional<History> findByUserIdAndStatus(Long userId, HistoryStatus historyStatus);
+    Optional<History> findByUserIdAndStatusAndType(Long userId, HistoryStatus historyStatus, HistoryType historyType);
     List<History> findAllByUserIdAndNotifyStatus(Long userId, NotifyStatus notifyStatus);
 }

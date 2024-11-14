@@ -25,6 +25,10 @@ public class UserService {
         return userRepository.findById(userId);
     }
 
+    public void update(User user) {
+        userRepository.save(user);
+    }
+
     @Transactional
     public void signup(Long userId, SignupRequestDTO requestDTO, MultipartFile image) {
         User user = userRepository.findById(userId)
@@ -32,7 +36,8 @@ public class UserService {
 
         String imagePath = amazonS3Service.uploadRow(image, userId);
 
-        user.updateUser(requestDTO.username(), imagePath, null);
+        user.updateUser(requestDTO.username(), imagePath, null, null);
+        update(user);
     }
 
     @Transactional(readOnly = true)
@@ -64,6 +69,7 @@ public class UserService {
         if (profileImage != null) {
             profileImagePath = amazonS3Service.uploadProfile(profileImage, userId);
         }
-        user.updateUser(requestDTO.name(), rowImagePath, profileImagePath);
+        user.updateUser(requestDTO.name(), rowImagePath, profileImagePath, null);
+        update(user);
     }
 }
