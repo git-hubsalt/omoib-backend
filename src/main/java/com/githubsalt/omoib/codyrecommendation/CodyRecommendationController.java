@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/cody-recommendation")
@@ -25,7 +22,7 @@ public class CodyRecommendationController {
     @PostMapping("/recommend")
     public ResponseEntity<RecommendationResponseDTO> recommend(
             HttpServletRequest request,
-            @Validated @ModelAttribute RecommendationRequestDTO requestDTO) {
+            @Validated @RequestBody RecommendationRequestDTO requestDTO) {
 
         log.info("Cody 추천 요청: {}", requestDTO);
 

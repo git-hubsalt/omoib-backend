@@ -76,9 +76,9 @@ public class CodyRecommendationService {
 
     public void response(SqsRecommendResponseMessageDTO message) {
         List<Clothes> clothesList = new ArrayList<>();
-        for (Long clothesId : message.result()) {
-            clothesList.add(clothesService.getClothes(clothesId));
-        }
+        clothesList.add(clothesService.getClothes(message.prediction().upperId()));
+        clothesList.add(clothesService.getClothes(message.prediction().lowerId()));
+
         History pendingHistory = historyService.findPendingHistory(Long.parseLong(message.userId()), HistoryType.RECOMMENDATION);
         pendingHistory.setClothesList(clothesList);
         pendingHistory.setStatus(HistoryStatus.COMPLETED);

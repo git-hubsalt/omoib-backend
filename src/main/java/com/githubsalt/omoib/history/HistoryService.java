@@ -187,6 +187,9 @@ public class HistoryService {
         List<History> histories = findHistories(userId, historyType);
         List<HistoryClothesDTO> historyClothesDTOList = new ArrayList<>();
         for (History history : histories) {
+            if (history.getClothesList() == null) {
+                continue;
+            }
             List<Long> clothesIdList = new ArrayList<>();
             for (Clothes clothes : history.getClothesList()) {
                 clothesIdList.add(clothes.getId());
