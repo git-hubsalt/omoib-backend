@@ -71,7 +71,7 @@ public class AmazonS3Service {
 
     private String getS3DateTime() {
         LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd-HHmmss");
         return now.format(formatter);
     }
 
