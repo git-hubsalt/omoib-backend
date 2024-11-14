@@ -8,4 +8,8 @@ public record HistoryReviewDTO(HistoryResponseDTO history, ReviewResponseBriefDT
     public static HistoryReviewDTO build(History history, Review review) {
         return new HistoryReviewDTO(HistoryResponseDTO.of(history), new ReviewResponseBriefDTO(review != null ? review.getText() : ""));
     }
+
+    public static HistoryReviewDTO build(HistoryResponseDTO historyResponseDTO, Review review) {
+        return new HistoryReviewDTO(historyResponseDTO, new ReviewResponseBriefDTO(review != null ? review.getText() : ""));
+    }
 }

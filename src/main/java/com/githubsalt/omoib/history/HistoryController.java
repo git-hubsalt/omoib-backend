@@ -1,5 +1,6 @@
 package com.githubsalt.omoib.history;
 
+ import com.githubsalt.omoib.aws.s3.PresignedURLBuilder;
  import com.githubsalt.omoib.global.config.security.JwtProvider;
 import com.githubsalt.omoib.history.dto.HistoryResponseDTO;
 import com.githubsalt.omoib.history.dto.HistoryReviewDTO;
@@ -23,6 +24,7 @@ public class HistoryController {
     private final HistoryService historyService;
     private final ReviewService reviewService;
     private final JwtProvider jwtProvider;
+    private final PresignedURLBuilder presignedURLBuilder;
 
     /**
      * 특정 History 조회
@@ -31,16 +33,19 @@ public class HistoryController {
      */
     @GetMapping("/{historyId}")
     public ResponseEntity<HistoryReviewDTO> getHistory(@PathVariable Long historyId) {
-        History history;
+        HistoryResponseDTO historyResponseDTO;
         Review review;
         try {
-            history = historyService.findHistory(historyId);
+            History history = historyService.findHistory(historyId);
+            historyResponseDTO = new HistoryResponseDTO(history.getId(), history.getType(), history.getClothesList(),
+                    presignedURLBuilder.buildGetPresignedURL(history.getFittingImageURL()).toString(), history.getFilterTagsString());
+
             review = reviewService.findReview(historyId).orElse(null);
         } catch (IllegalArgumentException e) {
             log.error("History 조회 중 오류가 발생했습니다: ", e);
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(HistoryReviewDTO.build(history, review));
+        return ResponseEntity.ok(HistoryReviewDTO.build(historyResponseDTO, review));
     }
 
     /**
