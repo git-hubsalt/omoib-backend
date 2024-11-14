@@ -41,14 +41,14 @@ public class DummyDataLoader implements ApplicationRunner {
                         .socialId("3782737851")
                         .email("test@test.test").build()
         );
-        user.updateUser("황수민", "users/3/row/20241108-175657/row.jpg", null, null);
-        userRepository.save(user);
+        user.updateUser("황수민", "users/1234/row/240101-010101/row.jpg", null, "240101-010101");
         User user2 = userRepository.findBySocialId("3783592966").orElse(
                 User.builder()
                     .socialId("3783592966")
                     .email("sinam7@kakao.com").build()
         );
-        user.updateUser("테스트", "users/1234/row/240101-010101/row.jpg", null, "240101-010101");
+        user2.updateUser("테스트", "users/1234/row/240101-010101/row.jpg", null, "240101-010101");
+        userRepository.save(user);
         userRepository.save(user2);
 
         log.info("Dummy User Created");
@@ -60,7 +60,7 @@ public class DummyDataLoader implements ApplicationRunner {
                         .seasonType(List.of(SeasonType.봄, SeasonType.가을))
                         .clothesStorageType(ClothesStorageType.CLOSET)
                         .user(user)
-                        .imagePath("users/a/items/closet/lower.jpg")
+                        .imagePath("users/1234/items/closet/lower.jpg")
                         .build()
         );
         clothesRepository.save(lower);
@@ -72,7 +72,7 @@ public class DummyDataLoader implements ApplicationRunner {
                         .seasonType(List.of(SeasonType.여름, SeasonType.가을))
                         .clothesStorageType(ClothesStorageType.CLOSET)
                         .user(user)
-                        .imagePath("users/a/items/closet/upper.jpg")
+                        .imagePath("users/1234/items/closet/upper.jpg")
                         .build()
         );
         clothesRepository.save(upper);
@@ -96,7 +96,7 @@ public class DummyDataLoader implements ApplicationRunner {
                 .clothesList(List.of(upper, lower))
                 .status(HistoryStatus.COMPLETED)
                 .notifyStatus(NotifyStatus.NOT_YET)
-                .fittingImageURL("users/a/vton_result/241108-230001/result.jpg")
+                .fittingImageURL("users/1234/vton_result/241108-230001/result.jpg")
                 .build();
         historyRepository.save(fitting);
         log.info("Dummy History Created");
