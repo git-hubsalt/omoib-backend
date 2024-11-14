@@ -121,6 +121,11 @@ public class HistoryService {
         return historyRepository.findByUserIdAndStatusAndType(userId, HistoryStatus.PENDING, historyType).orElse(null);
     }
 
+    @Transactional(readOnly = true)
+    public List<History> findAllPendingHistory(Long userId, HistoryType historyType) {
+        return historyRepository.findAllByUserIdAndStatusAndType(userId, HistoryStatus.PENDING, historyType);
+    }
+
     /**
      * 특정 추천 기록을 조회합니다. 해당 작업은 조회 후 알림 상태를 읽음으로 변경합니다.
      *

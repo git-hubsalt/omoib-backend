@@ -33,9 +33,9 @@ public class VirtualFittingService {
 
     public void fitting(Long userId, FittingRequestDTO requestDTO) {
 
-        if (historyService.hasPendingHistory(userId)) {
-            throw new IllegalStateException("이미 피팅 요청이 진행 중입니다.");
-        }
+//        if (historyService.hasPendingHistory(userId)) {
+//            throw new IllegalStateException("이미 피팅 요청이 진행 중입니다.");
+//        }
 
         Clothes upper = clothesService.getClothes(requestDTO.upperClothesId());
         Clothes lower = clothesService.getClothes(requestDTO.lowerClothesId());
@@ -62,13 +62,19 @@ public class VirtualFittingService {
 
 
     public void response(SqsFittingResponseMessageDTO message) {
-        History pendingHistory = historyService.findPendingHistory(Long.parseLong(message.userId()), HistoryType.FITTING);
-        if (pendingHistory == null) {
+//        History pendingHistory = historyService.findPendingHistory(Long.parseLong(message.userId()), HistoryType.FITTING);
+        List<History> pendingHistories = historyService.findAllPendingHistory(Long.parseLong(message.userId()), HistoryType.FITTING);
+        if (/*pendingHistory == null || */pendingHistories.isEmpty()) {
             log.error("Pending history not found. userId: {}, type: {}", message.userId(), HistoryType.FITTING);
             return;
         }
-        pendingHistory.setFittingImageURL("/users/" + message.userId() + "/vton_result/" + message.initial_timestamp() + "/result.jpg");
-        pendingHistory.setStatus(HistoryStatus.COMPLETED);
-        historyService.updateHistory(pendingHistory);
+        for (History pendingHistory : pendingHistories) {
+            pendingHistory.setFittingImageURL("/users/" + message.userId() + "/vton_result/" + message.initial_timestamp() + "/result.jpg");
+            pendingHistory.setStatus(HistoryStatus.COMPLETED);
+            historyService.updateHistory(pendingHistory);
+        }
+//        pendingHistory.setFittingImageURL("/users/" + message.userId() + "/vton_result/" + message.initial_timestamp() + "/result.jpg");
+//        pendingHistory.setStatus(HistoryStatus.COMPLETED);
+//        historyService.updateHistory(pendingHistory);
     }
 }
