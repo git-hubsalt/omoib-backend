@@ -139,7 +139,7 @@ public class HistoryService {
             history.setNotifyStatus(NotifyStatus.NOTIFIED);
             historyRepository.save(history);
         }
-        history.setFittingImageURL(presignedURLBuilder.buildGetPresignedURL(history.getFittingImageURL()).toString());
+        if (history.getType() == HistoryType.FITTING) history.setFittingImageURL(presignedURLBuilder.buildGetPresignedURL(history.getFittingImageURL()).toString());
         return history;
     }
 
