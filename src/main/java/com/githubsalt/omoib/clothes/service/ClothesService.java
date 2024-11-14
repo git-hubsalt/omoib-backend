@@ -2,12 +2,8 @@ package com.githubsalt.omoib.clothes.service;
 
 import com.githubsalt.omoib.aws.s3.PresignedURLBuilder;
 import com.githubsalt.omoib.clothes.domain.Clothes;
-import com.githubsalt.omoib.clothes.dto.BriefClothesDTO;
-import com.githubsalt.omoib.clothes.dto.ClothesResponseDTO;
-import com.githubsalt.omoib.clothes.dto.GetClothesResponseDTO;
-import com.githubsalt.omoib.clothes.dto.RegisterClothesRequestDTO;
+import com.githubsalt.omoib.clothes.dto.*;
 import com.githubsalt.omoib.clothes.dto.RegisterClothesRequestDTO.RegisterClothesDTO;
-import com.githubsalt.omoib.clothes.dto.UpdateClothesRequestDTO;
 import com.githubsalt.omoib.clothes.enums.ClothesType;
 import com.githubsalt.omoib.clothes.enums.SeasonType;
 import com.githubsalt.omoib.clothes.repository.ClothesRepository;
@@ -177,6 +173,18 @@ public class ClothesService {
                 clothes.getSeasonType(),
                 presignedURLBuilder.buildGetPresignedURL(clothes.getImagePath()).toString()
         );
+    }
+
+    public ClothesWithPresignedDTO withPresignedDTO(Clothes clothes) {
+        return new ClothesWithPresignedDTO(
+                clothes.getId(),
+                clothes.getName(),
+                clothes.getClothesType(),
+                clothes.getSeasonType(),
+                presignedURLBuilder.buildGetPresignedURL(clothes.getImagePath()).toString(),
+                clothes.getClothesStorageType(),
+                clothes.getCreateAt(),
+                clothes.getUpdateAt());
     }
 
     private static MergedResult mergeClothesDTOs(ClothesResponseDTO closet, ClothesResponseDTO wish) {

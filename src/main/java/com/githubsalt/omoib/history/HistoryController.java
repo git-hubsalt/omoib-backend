@@ -1,6 +1,9 @@
 package com.githubsalt.omoib.history;
 
  import com.githubsalt.omoib.aws.s3.PresignedURLBuilder;
+ import com.githubsalt.omoib.clothes.domain.Clothes;
+ import com.githubsalt.omoib.clothes.dto.ClothesWithPresignedDTO;
+ import com.githubsalt.omoib.clothes.service.ClothesService;
  import com.githubsalt.omoib.global.config.security.JwtProvider;
 import com.githubsalt.omoib.history.dto.HistoryResponseDTO;
 import com.githubsalt.omoib.history.dto.HistoryReviewDTO;
@@ -22,6 +25,7 @@ import java.util.List;
 public class HistoryController {
 
     private final HistoryService historyService;
+    private final ClothesService clothesService;
     private final ReviewService reviewService;
     private final JwtProvider jwtProvider;
     private final PresignedURLBuilder presignedURLBuilder;
@@ -37,8 +41,7 @@ public class HistoryController {
         Review review;
         try {
             History history = historyService.findHistory(historyId);
-            historyResponseDTO = new HistoryResponseDTO(history.getId(), history.getType(), history.getClothesList(),
-                    presignedURLBuilder.buildGetPresignedURL(history.getFittingImageURL()).toString(), history.getFilterTagsString());
+            historyResponseDTO = getHistoryResponseDTO(history);
 
             review = reviewService.findReview(historyId).orElse(null);
         } catch (IllegalArgumentException e) {
@@ -62,13 +65,36 @@ public class HistoryController {
         try {
             histories = historyService.findHistories(userId, historyType);
             for (History history : histories) {
-                historyResponseDTOs.add(HistoryResponseDTO.of(history));
+                historyResponseDTOs.add(getHistoryResponseDTO(history));
             }
         } catch (IllegalArgumentException e) {
             log.error("History 조회 중 오류가 발생했습니다: ", e);
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(historyResponseDTOs);
+    }
+
+    private HistoryResponseDTO getHistoryResponseDTO(History history) {
+        HistoryResponseDTO historyResponseDTO;
+        List<Clothes> clothesList = history.getClothesList();
+        List<ClothesWithPresignedDTO> clothesListWithPresignedURL = getClothesWithPresignedDTOS(clothesList);
+
+        String historyFittingPresigned = null;
+        if (history.getType() == HistoryType.FITTING) {
+            historyFittingPresigned = presignedURLBuilder.buildGetPresignedURL(history.getFittingImageURL()).toString();
+        }
+
+        historyResponseDTO = new HistoryResponseDTO(history.getId(), history.getType(), clothesListWithPresignedURL,
+                historyFittingPresigned, history.getFilterTagsString());
+        return historyResponseDTO;
+    }
+
+    private List<ClothesWithPresignedDTO> getClothesWithPresignedDTOS(List<Clothes> clothesList) {
+        List<ClothesWithPresignedDTO> clothesListWithPresignedURL = new ArrayList<>();
+        for (Clothes clothes : clothesList) {
+            clothesListWithPresignedURL.add(clothesService.withPresignedDTO(clothes));
+        }
+        return clothesListWithPresignedURL;
     }
 
     /**
