@@ -42,6 +42,11 @@ public class ClothesService {
             for (SeasonType seasonType : cloth.getSeasonType()) {
                 tagList.add(seasonType.name());
             }
+
+            if (cloth.getClothesType() != null) {
+                tagList.add(cloth.getClothesType().getDescription());
+            }
+
             GetClothesResponseDTO.ClothesItemDTO clothesItemDTO = new GetClothesResponseDTO.ClothesItemDTO(
                     cloth.getId(),
                     cloth.getName(),
@@ -168,7 +173,7 @@ public class ClothesService {
         return new BriefClothesDTO(
                 clothes.getId(),
                 clothes.getName(),
-                clothes.getClothesType(),
+                clothes.getClothesType().getDescription(),
                 clothes.getSeasonType(),
                 presignedURLBuilder.buildGetPresignedURL(clothes.getImagePath()).toString()
         );

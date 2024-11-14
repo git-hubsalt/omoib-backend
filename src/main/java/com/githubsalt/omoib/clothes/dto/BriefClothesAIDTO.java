@@ -5,6 +5,6 @@ public record BriefClothesAIDTO(long id,
                                 String type,
                                 String url) {
     public static BriefClothesAIDTO of(BriefClothesDTO dto) {
-        return new BriefClothesAIDTO(dto.id(), dto.name(), dto.type().getDescription(), dto.url());
+        return new BriefClothesAIDTO(dto.id(), dto.name(), dto.clothesType(), dto.url());
     }
 }
