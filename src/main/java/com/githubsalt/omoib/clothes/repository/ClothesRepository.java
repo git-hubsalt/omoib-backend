@@ -15,5 +15,5 @@ public interface ClothesRepository extends JpaRepository<Clothes, Long> {
     List<Clothes> findAllByUserId(Long userId);
 
     List<Clothes> findAllByClothesStorageTypeAndUserId(ClothesStorageType clothesStorageType, Long userId);
-    boolean existsByNameAndUserId(String name, Long userId);
+    boolean existsByNameAndUserIdAndClothesStorageType(String name, Long userId, ClothesStorageType clothesStorageType);
 }
