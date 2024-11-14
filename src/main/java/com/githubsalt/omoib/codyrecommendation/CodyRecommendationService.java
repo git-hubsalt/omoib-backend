@@ -71,7 +71,7 @@ public class CodyRecommendationService {
                 exclude,
                 String.join(",", requestDTO.filterTagList()));
 
-        sageMakerInvoker.invokeEndpoint("cody-recommendation", aiModelRequestDTO);
+        sageMakerInvoker.invokeEndpoint("oft-12", aiModelRequestDTO);
     }
 
     public void response(SqsRecommendResponseMessageDTO message) {
