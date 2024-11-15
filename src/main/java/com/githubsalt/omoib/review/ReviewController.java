@@ -9,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/review")
@@ -24,7 +21,7 @@ public class ReviewController {
     private final JwtProvider jwtProvider;
 
     @PutMapping("/update")
-    public ResponseEntity<ReviewResponseDTO> updateReview(HttpServletRequest request, @Validated @ModelAttribute ReviewFormDTO formDTO) {
+    public ResponseEntity<ReviewResponseDTO> updateReview(HttpServletRequest request, @Validated @RequestBody ReviewFormDTO formDTO) {
         log.info("리뷰 처리 요청: {}", formDTO);
 
         Long userId = jwtProvider.getUserId(request);
