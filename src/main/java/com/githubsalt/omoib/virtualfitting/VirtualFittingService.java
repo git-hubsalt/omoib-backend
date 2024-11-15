@@ -53,7 +53,7 @@ public class VirtualFittingService {
                 presignedURLBuilder.buildGetPresignedURL(upper.getImagePath()).toString(),
                 presignedURLBuilder.buildGetPresignedURL(lower.getImagePath()).toString(),
                 presignedURLBuilder.buildGetPresignedURL(String.format("users/%s/masking/%s/overall.png",
-                        user.getSocialId(), user.getLastMaskingTimestamp())).toString(), // TODO rollback
+                        13, user.getLastMaskingTimestamp())).toString(), // TODO rollback
                 "overall");
 
 
