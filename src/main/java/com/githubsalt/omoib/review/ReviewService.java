@@ -28,9 +28,9 @@ public class ReviewService {
         log.info("리뷰 수정 요청: {}", requestDTO);
 
         // 사용자 유효성 검증
-        if (historyService.isHistoryOwner(requestDTO.userId(), requestDTO.historyId())) {
-            throw new IllegalArgumentException("사용자가 히스토리의 소유자가 아닙니다.");
-        }
+//        if (historyService.isHistoryOwner(requestDTO.userId(), requestDTO.historyId())) {
+//            throw new IllegalArgumentException("사용자가 히스토리의 소유자가 아닙니다.");
+//        }
 
         // 리뷰 있으면 수정, 없으면 생성
         Review review = findReview(requestDTO.historyId())
