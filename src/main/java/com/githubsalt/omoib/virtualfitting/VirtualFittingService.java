@@ -53,8 +53,7 @@ public class VirtualFittingService {
                 presignedURLBuilder.buildGetPresignedURL(upper.getImagePath()).toString(),
                 presignedURLBuilder.buildGetPresignedURL(lower.getImagePath()).toString(),
                 presignedURLBuilder.buildGetPresignedURL(String.format("users/%s/masking/%s/overall.png",
-                        13, user.getLastMaskingTimestamp())).toString(), // TODO rollback
-                "overall");
+                        user.getId(), user.getLastMaskingTimestamp())).toString(), "overall");
 
 
         sageMakerInvoker.invokeEndpoint("vton-fp16-2", aiRequestDTO);
